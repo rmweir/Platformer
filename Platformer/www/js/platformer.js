@@ -368,9 +368,48 @@
     counter++;
     requestAnimationFrame(frame, canvas);
   }
+
+  function touchHandlerR(e) {
+    e.preventDefault();
+    onkey('touchstart',39,true);	
+  }
+
+  function touchEndHandlerR(e) {
+    e.preventDefault();
+    onkey('touchend',39,false);
+  }
+
+  function touchHandlerL(e) {
+    e.preventDefault();
+    onkey('touchstart',37,true);	
+  }
+
+  function touchEndHandlerL(e) {
+    e.preventDefault();
+    onkey('touchend',37,false);
+  }
+
+  function touchHandlerUP(e) {
+    e.preventDefault();
+    onkey('touchstart',32,true);	
+  }
+
+  function touchEndHandlerUP(e) {
+    e.preventDefault();
+    onkey('touchend',32,false);
+  }
   
   document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
   document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
+ 
+  document.getElementById("buttonR").addEventListener('touchstart', touchHandlerR, false);
+  document.getElementById("buttonR").addEventListener('touchend', touchEndHandlerR, false);
+
+  document.getElementById("buttonL").addEventListener('touchstart', touchHandlerL, false);
+  document.getElementById("buttonL").addEventListener('touchend', touchEndHandlerL, false);
+
+  document.getElementById("buttonUP").addEventListener('touchstart', touchHandlerUP, false);
+  document.getElementById("buttonUP").addEventListener('touchend', touchEndHandlerUP, false);
 
   get("asset/levels/levelWORK.json", function(req) {
     setup(JSON.parse(req.responseText));
@@ -378,7 +417,3 @@
   });
     
     
-    
-    
-})();
-
