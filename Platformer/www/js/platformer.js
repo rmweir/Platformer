@@ -1,4 +1,5 @@
 (function() { // module pattern
+    console.log("_________________starting game_________________");
 
   //-------------------------------------------------------------------------
   // POLYFILLS
@@ -15,50 +16,19 @@
   }
 
   //-------------------------------------------------------------------------
-  // UTILITIES
-  //-------------------------------------------------------------------------
-  
-  function timestamp() {
-    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-  }
-  
-  function bound(x, min, max) {
-    return Math.max(min, Math.min(max, x));
-  }
-
-  function get(url, onsuccess) {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-      if ((request.readyState == 4) && (request.status == 200))
-        onsuccess(request);
-    }
-    request.open("GET", url, true);
-    request.send();
-  }
-
-  function overlap(x1, y1, w1, h1, x2, y2, w2, h2) {
-    return !(((x1 + w1 - 1) < x2) ||
-             ((x2 + w2 - 1) < x1) ||
-             ((y1 + h1 - 1) < y2) ||
-             ((y2 + h2 - 1) < y1))
-  }
-  
-  //-------------------------------------------------------------------------
   // GAME CONSTANTS AND VARIABLES
   //-------------------------------------------------------------------------
   
-  var MAP      = { tw: 45, th: 30 },
+  var MAP      = { tw: 24, th: 16 },
       TILE     = 32,
       METER    = TILE,
-      GRAVITY  = 9.8 * 6, // default (exagerated) gravity
+      GRAVITY  = 9.8 * 4, // default (exagerated) gravity
       MAXDX    = 15,      // default max horizontal speed (15 tiles per second)
       MAXDY    = 60,      // default max vertical speed   (60 tiles per second)
       ACCEL    = 1/2,     // default take 1/2 second to reach maxdx (horizontal acceleration)
       FRICTION = 1/6,     // default take 1/6 second to stop from maxdx (horizontal friction)
       IMPULSE  = 1500,    // default player jump impulse
-      COLOR    = { BLACK: '#000000', YELLOW: '#ECD078', BRICK: '#D95B43', PINK: '#C02942', PURPLE: '#542437', GREY: '#333', SLATE: '#53777A', GOLD: 'gold' },
-      COLORS   = [ COLOR.YELLOW, COLOR.BRICK, COLOR.PINK, COLOR.PURPLE, COLOR.GREY ],
-      KEY      = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 };
+      KEY      = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }; // keyboard keycodes
       
   var fps      = 60,
       step     = 1/fps,
@@ -76,7 +46,11 @@
       cell     = function(x,y)   { return tcell(p2t(x),p2t(y));    },
       tcell    = function(tx,ty) { return cells[tx + (ty*MAP.tw)]; };
   
-  
+    var spritesheet = new Image();
+        spritesheet.src = "asset/sprites/spritesheet_no_space.png";
+    
+    
+    
   //-------------------------------------------------------------------------
   // UPDATE LOOP
   //-------------------------------------------------------------------------
@@ -255,53 +229,63 @@
       for(x = 0 ; x < MAP.tw ; x++) {
         cell = tcell(x, y);
         if (cell) {
-          ctx.fillStyle = COLORS[cell - 1];
-          ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
+          //ctx.fillStyle = COLORS[1];
+          //ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
+            drawSprite(cell - 1, x * TILE, y * TILE)
         }
       }
     }
   }
 
+    function drawSprite(tileNum, x , y){
+        var sx = t2p(tileNum % (spritesheet.width / TILE));
+        var sy = t2p(Math.floor(tileNum / (spritesheet.width / TILE)));
+        ctx.drawImage(spritesheet, sx, sy, TILE, TILE, x, y, TILE, TILE);
+    }
+    
   function renderPlayer(ctx, dt) {
-    ctx.fillStyle = COLOR.YELLOW;
-    ctx.fillRect(player.x + (player.dx * dt), player.y + (player.dy * dt), TILE, TILE);
-
+    //ctx.fillStyle = COLOR.YELLOW;
+    //ctx.fillRect(player.x + (player.dx * dt), player.y + (player.dy * dt), TILE, TILE);
+    drawSprite(112, player.x + (player.dx * dt), player.y + (player.dy * dt) )
+      
     var n, max;
-
-    ctx.fillStyle = COLOR.GOLD;
+    ctx.fillStyle = 0xFF00FF;
     for(n = 0, max = player.collected ; n < max ; n++)
       ctx.fillRect(t2p(2 + n), t2p(2), TILE/2, TILE/2);
 
-    ctx.fillStyle = COLOR.SLATE;
+    ctx.fillStyle = 0xFF0000;
     for(n = 0, max = player.killed ; n < max ; n++)
       ctx.fillRect(t2p(2 + n), t2p(3), TILE/2, TILE/2);
   }
 
   function renderMonsters(ctx, dt) {
-    ctx.fillStyle = COLOR.SLATE;
+    //ctx.fillStyle = COLOR.SLATE;
     var n, max, monster;
     for(n = 0, max = monsters.length ; n < max ; n++) {
       monster = monsters[n];
-      if (!monster.dead)
-        ctx.fillRect(monster.x + (monster.dx * dt), monster.y + (monster.dy * dt), TILE, TILE);
+      if (!monster.dead){
+          //ctx.fillRect(monster.x + (monster.dx * dt), monster.y + (monster.dy * dt), TILE, TILE);
+          drawSprite(389, monster.x + (monster.dx * dt), monster.y + (monster.dy * dt));
+      }
     }
   }
 
   function renderTreasure(ctx, frame) {
-    ctx.fillStyle   = COLOR.GOLD;
+    //ctx.fillStyle   = COLOR.GOLD;
     ctx.globalAlpha = 0.25 + tweenTreasure(frame, 60);
     var n, max, t;
     for(n = 0, max = treasure.length ; n < max ; n++) {
       t = treasure[n];
       if (!t.collected)
-        ctx.fillRect(t.x, t.y + TILE/3, TILE, TILE*2/3);
+        //ctx.fillRect(t.x, t.y + TILE/3, TILE, TILE*2/3);
+        drawSprite(104, t.x, t.y );
     }
     ctx.globalAlpha = 1;
   }
 
   function tweenTreasure(frame, duration) {
     var half  = duration/2
-        pulse = frame%duration;
+        pulse = frame % duration;
     return pulse < half ? (pulse/half) : 1-(pulse-half)/half;
   }
 
@@ -310,6 +294,7 @@
   //-------------------------------------------------------------------------
   
   function setup(map) {
+    console.log("setting up map");
     var data    = map.layers[0].data,
         objects = map.layers[1].objects,
         n, obj, entity;
@@ -318,34 +303,47 @@
       obj = objects[n];
       entity = setupEntity(obj);
       switch(obj.type) {
-      case "player"   : player = entity; break;
-      case "monster"  : monsters.push(entity); break;
-      case "treasure" : treasure.push(entity); break;
+      case "player"   : 
+              player = entity; 
+              break;
+      case "monster"  : 
+              entity.maxdx = METER * 3;
+              entity.left = Math.random() < .5;
+              entity.right = !entity.left;
+              monsters.push(entity);
+              break;
+      case "treasure" : 
+              treasure.push(entity); 
+              break;
       }
     }
-
     cells = data;
   }
 
   function setupEntity(obj) {
+    //console.log("loading entity...");
     var entity = {};
     entity.x        = obj.x;
     entity.y        = obj.y;
     entity.dx       = 0;
     entity.dy       = 0;
-    entity.gravity  = METER * (obj.properties.gravity || GRAVITY);
-    entity.maxdx    = METER * (obj.properties.maxdx   || MAXDX);
-    entity.maxdy    = METER * (obj.properties.maxdy   || MAXDY);
-    entity.impulse  = METER * (obj.properties.impulse || IMPULSE);
-    entity.accel    = entity.maxdx / (obj.properties.accel    || ACCEL);
-    entity.friction = entity.maxdx / (obj.properties.friction || FRICTION);
+    entity.gravity  = METER * GRAVITY;
+    entity.maxdx    = METER * MAXDX;
+    entity.maxdy    = METER * MAXDY;
+    entity.impulse  = METER * IMPULSE;
+    entity.accel    = entity.maxdx / ACCEL;
+    entity.friction = entity.maxdx / FRICTION;
+      
     entity.monster  = obj.type == "monster";
     entity.player   = obj.type == "player";
     entity.treasure = obj.type == "treasure";
-    entity.left     = obj.properties.left;
-    entity.right    = obj.properties.right;
+    
+    entity.left     = false;
+    entity.right    = false;
+      
     entity.start    = { x: obj.x, y: obj.y }
     entity.killed = entity.collected = 0;
+    console.log("loaded entity");
     return entity;
   }
 
@@ -353,67 +351,66 @@
   // THE GAME LOOP
   //-------------------------------------------------------------------------
   
+  
   var counter = 0, dt = 0, now,
-      last = timestamp();
+      last = timestamp(),
+      fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'dark', left: '5px' });
   
   function frame() {
+    fpsmeter.tickStart();
     now = timestamp();
     dt = dt + Math.min(1, (now - last) / 1000);
     while(dt > step) {
       dt = dt - step;
       update(step);
     }
+
     render(ctx, counter, dt);
     last = now;
     counter++;
+    fpsmeter.tick();
     requestAnimationFrame(frame, canvas);
-  }
-
-  function touchHandlerR(e) {
-    e.preventDefault();
-    onkey('touchstart',39,true);	
-  }
-
-  function touchEndHandlerR(e) {
-    e.preventDefault();
-    onkey('touchend',39,false);
-  }
-
-  function touchHandlerL(e) {
-    e.preventDefault();
-    onkey('touchstart',37,true);	
-  }
-
-  function touchEndHandlerL(e) {
-    e.preventDefault();
-    onkey('touchend',37,false);
-  }
-
-  function touchHandlerUP(e) {
-    e.preventDefault();
-    onkey('touchstart',32,true);	
-  }
-
-  function touchEndHandlerUP(e) {
-    e.preventDefault();
-    onkey('touchend',32,false);
   }
   
   document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
   document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
- 
-  document.getElementById("buttonR").addEventListener('touchstart', touchHandlerR, false);
-  document.getElementById("buttonR").addEventListener('touchend', touchEndHandlerR, false);
 
-  document.getElementById("buttonL").addEventListener('touchstart', touchHandlerL, false);
-  document.getElementById("buttonL").addEventListener('touchend', touchEndHandlerL, false);
-
-  document.getElementById("buttonUP").addEventListener('touchstart', touchHandlerUP, false);
-  document.getElementById("buttonUP").addEventListener('touchend', touchEndHandlerUP, false);
-
-  get("asset/levels/levelWORK.json", function(req) {
+  get("asset/levels/templateNEW3.json", function(req) {
     setup(JSON.parse(req.responseText));
     frame();
   });
     
+  //-------------------------------------------------------------------------
+  // UTILITIES
+  //-------------------------------------------------------------------------
+  
+  function timestamp() {
+    return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+  }
+  
+  function bound(x, min, max) {
+    return Math.max(min, Math.min(max, x));
+  }
+
+  function get(url, onsuccess) {
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if ((request.readyState == 4) && (request.status == 200))
+        onsuccess(request);
+    }
+    request.open("GET", url, true);
+    request.send();
+  }
+
+  function overlap(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return !(((x1 + w1 - 1) < x2) ||
+             ((x2 + w2 - 1) < x1) ||
+             ((y1 + h1 - 1) < y2) ||
+             ((y2 + h2 - 1) < y1))
+  }
+
     
+    
+    
+    
+})();
