@@ -371,9 +371,42 @@
     fpsmeter.tick();
     requestAnimationFrame(frame, canvas);
   }
+     
+    function touchHandler(e) {
+        e.preventDefault();
+        var type = e.type;
+        var id = e.target.id;
+       console.log("touchevent! - " + id + "      " + type);
+        switch (id){
+            case 'rightBtn':
+                if(type == 'touchstart') onkey(e, KEY.RIGHT, true);
+                else if(type == 'touchend') onkey(e, KEY.RIGHT, false);	
+                break;
+            case 'leftBtn':
+                if(type == 'touchstart') onkey(e, KEY.LEFT, true);
+                else if(type == 'touchend') onkey(e, KEY.LEFT, false);	
+                break;
+            case 'upBtn':
+                console.log("up done");
+                if(type == 'touchstart') onkey(e, KEY.SPACE, true);
+                else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
+                break;
+            default:
+                break;
+        }
+    }
   
   document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
   document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
+ 
+  document.getElementById("rightBtn").addEventListener('touchstart', touchHandler, false);
+  document.getElementById("rightBtn").addEventListener('touchend', touchHandler, false);
+
+  document.getElementById("leftBtn").addEventListener('touchstart', touchHandler, false);
+  document.getElementById("leftBtn").addEventListener('touchend', touchHandler, false);
+
+  document.getElementById("upBtn").addEventListener('touchstart', touchHandler, false);
+  document.getElementById("upBtn").addEventListener('touchend', touchHandler, false);
 
   get("asset/levels/template24x16 - 2.json", function(req) {
     setup(JSON.parse(req.responseText));
