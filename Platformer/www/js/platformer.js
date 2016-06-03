@@ -1,6 +1,15 @@
 (function() { // module pattern
     console.log("_________________starting game_________________");
 
+    /* TODO 
+        - environment tiles that dont collide with player (separate array/ tile layer for non colliding)
+        - more levels
+        - score/tally
+        - handle final level
+        - edge collision
+    
+    */
+    
     //-------------------------------------------------------------------------
     // POLYFILLS
     //-------------------------------------------------------------------------
@@ -39,21 +48,27 @@
         player   = {},
         monsters = [],
         treasure = [],
-        cells    = [];
+        cTiles   = [],
+        ncTiles  = [],
+        goalTx, goalTy;
 
-    var t2p      = function(t)     { return t*TILE;                  },
-        p2t      = function(p)     { return Math.floor(p/TILE);      },
-        cell     = function(x,y)   { return tcell(p2t(x),p2t(y));    },
-        tcell    = function(tx,ty) { return cells[tx + (ty*MAP.tw)]; };
+    var t2p      = function(t)     { return t*TILE;                     },
+        p2t      = function(p)     { return Math.floor(p/TILE);         },
+        
+        cell     = function(x,y)   { return tcell(p2t(x),p2t(y));       },
+        tcell    = function(tx,ty) { return cTiles[tx + (ty*MAP.tw)];   },
+        
+        nccell   = function(x,y)   { return nctcell(p2t(x),p2t(y));     },
+        nctcell  = function(tx,ty) { return ncTiles[tx + (ty*MAP.tw)];  };
 
     var spritesheet = new Image();
     spritesheet.src = "asset/sprites/spritesheet_no_space.png";
+    
+    var currentMap = 1;
 
-    
-    
-  //-------------------------------------------------------------------------
-  // UPDATE LOOP
-  //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    // UPDATE LOOP
+    //-------------------------------------------------------------------------
 
     function onkey(ev, key, down) {
         switch(key) {
@@ -70,7 +85,13 @@
     }
 
     function updatePlayer(dt) {
+        // check goal
+        if (overlap(player.x, player.y, TILE, TILE, goalTx * TILE, goalTy * TILE, TILE, TILE)) {
+            console.log("GOAL REACHED!");
+            nextLevel();
+        }
         updateEntity(player, dt);
+
     }
 
     function updateMonsters(dt) {
@@ -108,6 +129,17 @@
         player.x = player.start.x;
         player.y = player.start.y;
         player.dx = player.dy = 0;
+    }
+    
+    function nextLevel(){
+        monsters = [],
+        treasure = [],
+        cells    = [];
+        
+        currentMap++;
+        get("asset/levels/level" + currentMap + ".json", function(req) {
+            setup(JSON.parse(req.responseText));
+        });
     }
 
     function collectTreasure(t) {
@@ -203,9 +235,9 @@
         entity.falling = ! (celldown || (nx && celldiag));
     }
 
-  //-------------------------------------------------------------------------
-  // RENDERING
-  //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    // RENDERING
+    //-------------------------------------------------------------------------
   
     function render(ctx, frame, dt) {
         ctx.clearRect(0, 0, width, height);
@@ -220,11 +252,17 @@
         for(y = 0 ; y < MAP.th ; y++) {
             for(x = 0 ; x < MAP.tw ; x++) {
                 cell = tcell(x, y);
+                nccell = nctcell(x,y);
                 if (cell) {
                     drawSprite(cell - 1, x * TILE, y * TILE)
                 }
+                if (nccell) {
+                    drawSprite(nccell - 1, x * TILE, y * TILE)
+
+                }
             }
         }
+        
     }
  
     function renderPlayer(ctx, dt) {
@@ -278,10 +316,26 @@
     //-------------------------------------------------------------------------
 
     function setup(map) {
-        console.log("setting up map");
-        var data    = map.layers[0].data,
-        objects = map.layers[1].objects,
-        n, obj, entity;
+        console.log("setting up map " + currentMap);
+        var objects, n, obj, entity;
+        
+        for(var i = 0; i < map.layers.length; i++){
+            var layer = map.layers[i];
+            switch (layer.name){
+                case "cTiles" :
+                    cTiles = layer.data; break;
+                case "ncTiles" :
+                    ncTiles = layer.data; break;
+                case "objects" :
+                    objects = layer.objects; break;
+                default :
+                    console.log("That layer isn't handled."); break;
+            }
+        }
+        
+        goalTx = map.properties.goalTx;
+        goalTy = map.properties.goalTy;
+        console.log(goalTx + "   " + goalTy);
 
         for(n = 0 ; n < objects.length ; n++) {
             obj = objects[n];
@@ -301,7 +355,6 @@
                   break;
             }
         }
-        cells = data;
     }
 
     function setupEntity(obj) {
@@ -333,8 +386,7 @@
     //-------------------------------------------------------------------------
     // THE GAME LOOP
     //-------------------------------------------------------------------------
-
-
+    
     var counter = 0, 
         dt = 0, 
         now,
@@ -393,7 +445,7 @@
     document.getElementById("upBtn").addEventListener('touchstart', touchHandler, false);
     document.getElementById("upBtn").addEventListener('touchend', touchHandler, false);
 
-    get("asset/levels/template24x16 - 2.json", function(req) {
+    get("asset/levels/level" + currentMap + ".json", function(req) {
         setup(JSON.parse(req.responseText));
         frame();
     });
