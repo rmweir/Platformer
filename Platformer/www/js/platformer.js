@@ -2,7 +2,6 @@
     console.log("_________________starting game_________________");
 
     /* TODO 
-        - environment tiles that dont collide with player (separate array/ tile layer for non colliding)
         - more levels
         - score/tally
         - handle final level
@@ -33,11 +32,11 @@
         TILE     = 32,
         METER    = TILE,
         GRAVITY  = 9.8 * 4, // default (exagerated) gravity
-        MAXDX    = 15,      // default max horizontal speed (15 tiles per second)
+        MAXDX    = 8,      // default max horizontal speed (8 tiles per second)
         MAXDY    = 60,      // default max vertical speed   (60 tiles per second)
         ACCEL    = 1/2,     // default take 1/2 second to reach maxdx (horizontal acceleration)
         FRICTION = 1/6,     // default take 1/6 second to stop from maxdx (horizontal friction)
-        IMPULSE  = 1500,    // default player jump impulse
+        IMPULSE  = 1000,    // default player jump impulse
         KEY      = { SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }; // keyboard keycodes
 
     var fps      = 60,
@@ -164,6 +163,7 @@
         entity.ddx = 0;
         entity.ddy = entity.gravity;
 
+        
         if (entity.left)
             entity.ddx = entity.ddx - accel;
         else if (wasleft)
@@ -218,13 +218,13 @@
         }
 
         if (entity.dx > 0) {
-            if ((cellright && !cell) || (celldiag  && !celldown && ny)) {
+            if ((cellright && !cell) || (celldiag  && !celldown && ny) || (entity.x + TILE >= MAP.tw * TILE)) {
                 entity.x = t2p(tx);
                 entity.dx = 0;
             }
         } 
         else if (entity.dx < 0) {
-            if ((cell && !cellright) || (celldown && !celldiag && ny)) {
+            if ((cell && !cellright) || (celldown && !celldiag && ny) || (entity.x < 0)) {
                 entity.x = t2p(tx + 1);
                 entity.dx = 0;
             }
