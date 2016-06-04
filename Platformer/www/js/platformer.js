@@ -7,6 +7,7 @@
         - score/tally
         - handle final level
         - edge collision
+        - splash screen on start(will have done by 6/4/2016 11:59pm
     
     */
     
