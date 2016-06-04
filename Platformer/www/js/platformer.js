@@ -52,6 +52,12 @@
         ncTiles  = [],
         goalTx, goalTy;
 
+    //_______Sounds_________
+   // 
+
+    var jumpSound = document.getElementById("jumpSound");
+    var themeMusic = document.getElementById("theme"); 
+
     var t2p      = function(t)     { return t*TILE;                     },
         p2t      = function(p)     { return Math.floor(p/TILE);         },
         
@@ -168,6 +174,7 @@
             entity.ddx = entity.ddx - friction;
 
         if (entity.jump && !entity.jumping && !falling) {
+            jumpSound.play();			       // jumpSound must go here to avoid firing inappropriately
             entity.ddy = entity.ddy - entity.impulse; // an instant big force impulse   
             entity.jumping = true;
         }
@@ -386,7 +393,7 @@
     //-------------------------------------------------------------------------
     // THE GAME LOOP
     //-------------------------------------------------------------------------
-    
+        
     var counter = 0, 
         dt = 0, 
         now,
@@ -394,6 +401,7 @@
         fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'dark', left: '5px' });
 
     function frame() {
+        themeMusic.play();
         fpsmeter.tickStart();
         now = timestamp();
         dt = dt + Math.min(1, (now - last) / 1000);
@@ -425,7 +433,9 @@
                 break;
             case 'upBtn':
                 console.log("up done");
-                if(type == 'touchstart') onkey(e, KEY.SPACE, true);
+                if(type == 'touchstart'){
+		
+		onkey(e, KEY.SPACE, true);}
                 else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
                 break;
             default:
