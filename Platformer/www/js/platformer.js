@@ -72,13 +72,17 @@
     var playerSprite = 112,
         monsterSprite = 189,
         treasureSprite = 440,
-        emptyTreasureSprite = 441;
+        emptyTreasureSprite = 441,
+        heartSprite = 134,
+        halfHeartSprite = 135,
+        emptyHeartSprite = 136;
 
     
     //_______Other_________
    // 
     var currentLevel = 1;
-    var playerLives = 10;
+    var playerLives = 6;
+    var MAX_LIVES = 6;
     
     var showFPS = false;
     
@@ -153,17 +157,22 @@
 
     function killPlayer(player) {
         playerLives--;
+        player.x = player.start.x;
+        player.y = player.start.y;
+        player.dx = player.dy = 0;
+        
         if (playerLives <= 0){
-            player.x = player.start.x;
-            player.y = player.start.y;
-            player.dx = player.dy = 0;
+            //send back to level 1
         }
     }
     
     function nextLevel(){
+        player.x = 1000;
+        player.y = 1000;
         monsters = [],
         treasure = [],
-        cells    = [];
+        cTiles   = [],
+        ncTiles  = [];
         
         currentLevel++;
         get("asset/levels/level" + currentLevel + ".json", function(req) {
@@ -304,17 +313,28 @@
     function renderScores(){
         var n, max;
         var scale = .75;
+        
+        // Draw collected treasure
         for(n = 0, max = player.collected ; n < treasure.length ; n++){
             if(n < max)
                 drawSpriteScaled(treasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale);
             else
                 drawSpriteScaled(emptyTreasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale);
-
-            
         }
-
+        // Draw slain monsters
         for(n = 0, max = player.killed ; n < max ; n++)
             drawSpriteScaled(monsterSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 1), TILE * scale, TILE * scale); 
+        
+        //Draw lives
+        for(n = 0; n < Math.floor(MAX_LIVES / 2) ; n++){
+            drawSpriteScaled(emptyHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
+        }
+        for(n = 0; n < Math.floor(playerLives / 2) ; n++){
+            drawSpriteScaled(heartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
+        }
+        
+        
+        
     }
 
     function renderMonsters(ctx, dt) {
@@ -362,14 +382,14 @@
     //-------------------------------------------------------------------------
     function fadeOut(element) {
     	var opacity = 1;
-	var timer = setInterval(function() {
+        var timer = setInterval(function() {
 		if (opacity <= 0.1){
 			clearInterval(timer);
 			element.style.display = 'none';
 		}
 		element.style.opacity = opacity;
 		element.style.filter = 'alpha(opacity ='+opacity*100+")";
-			opacity-= opacity* 0.1;
+           opacity-= opacity* 0.1;
 		}, 50);
     }
 
