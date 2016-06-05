@@ -84,13 +84,15 @@
     var playerLives = 6;
     var MAX_LIVES = 6;
     
+    var playerColBuff = 10;
+    
     var showFPS = false;
     
     var t2p      = function(t)     { return t*TILE;                     },
         p2t      = function(p)     { return Math.floor(p/TILE);         },
         
         cell     = function(x,y)   { return tcell(p2t(x),p2t(y));       },
-        tcell    = function(tx,ty) { return cTiles[tx + (ty*MAP.tw)];   },
+        tcell    = function(tx,ty) { return cTiles[tx + (ty*MAP.tw)];   }, //return array index of tile at t coord
         
         nccell   = function(x,y)   { return nctcell(p2t(x),p2t(y));     },
         nctcell  = function(tx,ty) { return ncTiles[tx + (ty*MAP.tw)];  };
@@ -121,7 +123,6 @@
             nextLevel();
         }
         updateEntity(player, dt);
-
     }
 
     function updateMonsters(dt) {
@@ -133,7 +134,7 @@
     function updateMonster(monster, dt) {
         if (!monster.dead) {
             updateEntity(monster, dt);
-            if (overlap(player.x, player.y, TILE, TILE, monster.x, monster.y, TILE, TILE)) {
+            if (playerOverlap(monster.x, monster.y, TILE, TILE)) {
                 if ((player.dy > 0) && (monster.y - player.y > TILE/2))
                     killMonster(monster);
                 else killPlayer(player);
@@ -145,7 +146,7 @@
         var n, max, t;
         for(n = 0, max = treasure.length ; n < max ; n++) {
             t = treasure[n];
-            if (!t.collected && overlap(player.x, player.y, TILE, TILE, t.x, t.y, TILE, TILE))
+            if (!t.collected && playerOverlap(t.x, t.y, TILE, TILE))
                 collectTreasure(t);
         }
     }
@@ -166,8 +167,12 @@
         }
     }
     
+    function playerOverlap(x, y, width, height){
+        return overlap(player.x + playerColBuff , player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff* 2, x, y, width, height);
+    }
+    
     function nextLevel(){
-        player.x = 1000;
+        player.x = 1000; // prevent multiple goal reached
         player.y = 1000;
         monsters = [],
         treasure = [],
@@ -194,7 +199,6 @@
 
         entity.ddx = 0;
         entity.ddy = entity.gravity;
-
         
         if (entity.left)
             entity.ddx = entity.ddx - accel;
@@ -216,21 +220,22 @@
         entity.y  = entity.y  + (dt * entity.dy);
         entity.dx = bound(entity.dx + (dt * entity.ddx), -entity.maxdx, entity.maxdx);
         entity.dy = bound(entity.dy + (dt * entity.ddy), -entity.maxdy, entity.maxdy);
+        
 
         if ((wasleft  && (entity.dx > 0)) || (wasright && (entity.dx < 0))) {
             entity.dx = 0; // clamp at zero to prevent friction from making us jiggle side to side
         }
 
-        var tx        = p2t(entity.x),
+        var tx        = p2t(entity.x),          //tile containing player
             ty        = p2t(entity.y),
-            nx        = entity.x%TILE,
+            nx        = entity.x%TILE,          //depth of player into tile 
             ny        = entity.y%TILE,
-            cell      = tcell(tx,     ty),
-            cellright = tcell(tx + 1, ty),
-            celldown  = tcell(tx,     ty + 1),
-            celldiag  = tcell(tx + 1, ty + 1);
-
-        if (entity.dy > 0) {
+            cell      = tcell(tx,     ty),      //index of tile containing player
+            cellright = tcell(tx + 1, ty),      //index of tile right of player
+            celldown  = tcell(tx,     ty + 1),  //index of tile below player
+            celldiag  = tcell(tx + 1, ty + 1);  //index of tile down and right of player       
+        
+        if (entity.dy > 0) { // if falling
             if ((celldown && !cell) || (celldiag && !cellright && nx)) {
                 entity.y = t2p(ty);
                 entity.dy = 0;
@@ -239,7 +244,7 @@
                 ny = 0;
             }
         }
-        else if (entity.dy < 0) {
+        else if (entity.dy < 0) { // if jumping
             if ((cell && !celldown) || (cellright && !celldiag && nx)) {
                 entity.y = t2p(ty + 1);
                 entity.dy = 0;
@@ -307,6 +312,9 @@
  
     function renderPlayer(ctx, dt) {
         drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt) );
+        
+        ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
+
         renderScores();
     }
     
@@ -332,6 +340,8 @@
         for(n = 0; n < Math.floor(playerLives / 2) ; n++){
             drawSpriteScaled(heartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
         }
+        if (playerLives % 2 != 0)
+            drawSpriteScaled(halfHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
         
         
         
