@@ -5,7 +5,6 @@
         - more levels
         - score/tally
         - handle final level
-        - edge collision
         - splash screen on start(will have done by 6/4/2016 11:59pm
     
     */
@@ -62,6 +61,27 @@
     var leftBtn = document.getElementById("leftBtn");
     var upBtn = document.getElementById("upBtn");
 
+    
+
+    //_______Sprites_________
+   // 
+
+    var spritesheet = new Image();
+    spritesheet.src = "asset/sprites/spritesheet_no_space.png";
+    
+    var playerSprite = 112,
+        monsterSprite = 189,
+        treasureSprite = 440,
+        emptyTreasureSprite = 441;
+
+    
+    //_______Other_________
+   // 
+    var currentLevel = 1;
+    var playerLives = 10;
+    
+    var showFPS = false;
+    
     var t2p      = function(t)     { return t*TILE;                     },
         p2t      = function(p)     { return Math.floor(p/TILE);         },
         
@@ -70,11 +90,6 @@
         
         nccell   = function(x,y)   { return nctcell(p2t(x),p2t(y));     },
         nctcell  = function(tx,ty) { return ncTiles[tx + (ty*MAP.tw)];  };
-
-    var spritesheet = new Image();
-    spritesheet.src = "asset/sprites/spritesheet_no_space.png";
-    
-    var currentMap = 1;
 
     //-------------------------------------------------------------------------
     // UPDATE LOOP
@@ -95,8 +110,9 @@
     }
 
     function updatePlayer(dt) {
-        // check goal
-        if (overlap(player.x, player.y, TILE, TILE, goalTx * TILE, goalTy * TILE, TILE, TILE)) {
+        // check goal amd collected treasure
+        if (overlap(player.x, player.y, TILE, TILE, goalTx * TILE, goalTy * TILE, TILE, TILE) 
+            && player.collected >= treasure.length) {
             console.log("GOAL REACHED!");
             nextLevel();
         }
@@ -136,9 +152,12 @@
     }
 
     function killPlayer(player) {
-        player.x = player.start.x;
-        player.y = player.start.y;
-        player.dx = player.dy = 0;
+        playerLives--;
+        if (playerLives <= 0){
+            player.x = player.start.x;
+            player.y = player.start.y;
+            player.dx = player.dy = 0;
+        }
     }
     
     function nextLevel(){
@@ -146,8 +165,8 @@
         treasure = [],
         cells    = [];
         
-        currentMap++;
-        get("asset/levels/level" + currentMap + ".json", function(req) {
+        currentLevel++;
+        get("asset/levels/level" + currentLevel + ".json", function(req) {
             setup(JSON.parse(req.responseText));
         });
     }
@@ -278,16 +297,24 @@
     }
  
     function renderPlayer(ctx, dt) {
-        drawSprite(112, player.x + (player.dx * dt), player.y + (player.dy * dt) )
-        // Draw enemy/treasure tallys
+        drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt) );
+        renderScores();
+    }
+    
+    function renderScores(){
         var n, max;
-        ctx.fillStyle = 0xFF00FF;
-        for(n = 0, max = player.collected ; n < max ; n++)
-            ctx.fillRect(t2p(2 + n), t2p(2), TILE/2, TILE/2);
+        var scale = .75;
+        for(n = 0, max = player.collected ; n < treasure.length ; n++){
+            if(n < max)
+                drawSpriteScaled(treasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale);
+            else
+                drawSpriteScaled(emptyTreasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale);
 
-        ctx.fillStyle = 0xFF0000;
+            
+        }
+
         for(n = 0, max = player.killed ; n < max ; n++)
-            ctx.fillRect(t2p(2 + n), t2p(3), TILE/2, TILE/2);
+            drawSpriteScaled(monsterSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 1), TILE * scale, TILE * scale); 
     }
 
     function renderMonsters(ctx, dt) {
@@ -295,7 +322,7 @@
         for(n = 0, max = monsters.length ; n < max ; n++) {
             monster = monsters[n];
             if (!monster.dead){
-                drawSprite(389, monster.x + (monster.dx * dt), monster.y + (monster.dy * dt));
+                drawSprite(monsterSprite, monster.x + (monster.dx * dt), monster.y + (monster.dy * dt));
             }
         }
     }
@@ -306,7 +333,7 @@
         for(n = 0, max = treasure.length ; n < max ; n++) {
             t = treasure[n];
             if (!t.collected)
-                drawSprite(104, t.x, t.y );
+                drawSprite(treasureSprite, t.x, t.y );
         }
         ctx.globalAlpha = 1;
     }
@@ -322,6 +349,13 @@
         var sy = t2p(Math.floor(tileNum / (spritesheet.width / TILE)));
         ctx.drawImage(spritesheet, sx, sy, TILE, TILE, x, y, TILE, TILE);
     }
+    
+    function drawSpriteScaled(tileNum, x , y, width, height){
+        var sx = t2p(tileNum % (spritesheet.width / TILE));
+        var sy = t2p(Math.floor(tileNum / (spritesheet.width / TILE)));
+        ctx.drawImage(spritesheet, sx, sy, TILE, TILE, x, y, width, height);
+    }
+    
 
     //-------------------------------------------------------------------------
     // LOAD THE MAP
@@ -342,7 +376,7 @@
     
     
     function setup(map) {
-        console.log("setting up map " + currentMap);
+        console.log("setting up map " + currentLevel);
         var objects, n, obj, entity;
         
         for(var i = 0; i < map.layers.length; i++){
@@ -418,6 +452,7 @@
         now,
         last = timestamp(),
         fpsmeter = new FPSMeter({ decimals: 0, graph: true, theme: 'dark', left: '5px' });
+    if(!showFPS) fpsmeter.hide();
 
     function frame() {
         themeMusic.play();
@@ -451,10 +486,8 @@
                 else if(type == 'touchend') onkey(e, KEY.LEFT, false);	
                 break;
             case 'upBtn':
-                console.log("up done");
-                if(type == 'touchstart'){
-		
-		onkey(e, KEY.SPACE, true);}
+                //console.log("up done");
+                if(type == 'touchstart') onkey(e, KEY.SPACE, true);
                 else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
                 break;
 	    case 'splashScreen':
@@ -489,7 +522,7 @@
     splashScreen.addEventListener('touchStart', touchHandler, false);
     splashScreen.addEventListener('touchend', touchHandler, false);
 
-    get("asset/levels/level" + currentMap + ".json", function(req) {
+    get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
         frame();
     });
