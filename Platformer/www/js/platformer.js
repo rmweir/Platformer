@@ -56,11 +56,7 @@
    // 
 
     var jumpSound = document.getElementById("jumpSound");
-    var themeMusic = document.getElementById("theme");
-    var splashScreen = document.getElementById("splashScreen"); 
-    var rightBtn = document.getElementById("rightBtn");
-    var leftBtn = document.getElementById("leftBtn");
-    var upBtn = document.getElementById("upBtn");
+    var themeMusic = document.getElementById("theme"); 
 
     var t2p      = function(t)     { return t*TILE;                     },
         p2t      = function(p)     { return Math.floor(p/TILE);         },
@@ -326,21 +322,7 @@
     //-------------------------------------------------------------------------
     // LOAD THE MAP
     //-------------------------------------------------------------------------
-    function fadeOut(element) {
-    	var opacity = 1;
-	var timer = setInterval(function() {
-		if (opacity <= 0.1){
-			clearInterval(timer);
-			element.style.display = 'none';
-		}
-		element.style.opacity = opacity;
-		element.style.filter = 'alpha(opacity ='+opacity*100+")";
-			opacity-= opacity* 0.1;
-		}, 50);
-    }
 
-    
-    
     function setup(map) {
         console.log("setting up map " + currentMap);
         var objects, n, obj, entity;
@@ -457,18 +439,6 @@
 		onkey(e, KEY.SPACE, true);}
                 else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
                 break;
-	    case 'splashScreen':
-		
-		if(type == 'touchstart') 
-		{}
-		else if (type == 'touchend'){
- 			fadeOut(splashScreen);
-			
-	        }
-			rightBtn.style.visibility = "visible";
-			leftBtn.style.visibility = "visible";
-			upBtn.style.visibility = "visible";
-		break;
             default:
                 break;
         }
@@ -485,9 +455,6 @@
 
     document.getElementById("upBtn").addEventListener('touchstart', touchHandler, false);
     document.getElementById("upBtn").addEventListener('touchend', touchHandler, false);
-  
-    splashScreen.addEventListener('touchStart', touchHandler, false);
-    splashScreen.addEventListener('touchend', touchHandler, false);
 
     get("asset/levels/level" + currentMap + ".json", function(req) {
         setup(JSON.parse(req.responseText));
