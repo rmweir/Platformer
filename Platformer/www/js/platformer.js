@@ -84,9 +84,9 @@
     var playerLives = 6;
     var MAX_LIVES = 6;
     
-    var playerColBuff = 10;
+    var playerColBuff = 0;
     
-    var showFPS = false;
+    var showFPS = true;
     
     var t2p      = function(t)     { return t*TILE;                     },
         p2t      = function(p)     { return Math.floor(p/TILE);         },
@@ -403,8 +403,6 @@
 		}, 50);
     }
 
-    
-    
     function setup(map) {
         console.log("setting up map " + currentLevel);
         var objects, n, obj, entity;
