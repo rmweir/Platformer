@@ -313,7 +313,7 @@
     function renderPlayer(ctx, dt) {
         drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt) );
         
-        ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
+        //ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
 
         renderScores();
     }

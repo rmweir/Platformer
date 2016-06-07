@@ -2,11 +2,14 @@
   "project": {
     "projectSettingsVersion": "3.0.0",
     "initialAutoPluginCount": 0,
-    "currentBuildConfiguration": "WebApp",
+    "currentBuildConfiguration": "WP81",
     "projectFiles": {},
     "projectDirectories": {}
   },
   "editorTab": {
     "currentEditorMode": 0
+  },
+  "build-tab": {
+    "selectedTargets": []
   }
 }

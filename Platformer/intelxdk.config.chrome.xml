@@ -8,7 +8,8 @@
 <author>Intel XDK</author>
 <content src="index.html"/>
 <access origin="*"/>
-<!--creationInfo:{"src":"webapp/template-blank-game-landscape-webapp/sample.zip","projectTypeName":"com.intel.xdk.projecttype.webapp"}-->
+<intelxdk:plugin intelxdk:name="Screen Orientation" intelxdk:value="cordova-plugin-screen-orientation" intelxdk:version="1.4.0" intelxdk:checksum="43f9954b" intelxdk:type="file"/>
+<!--creationInfo:{"src":"webapp/template-blank-game-landscape-webapp/sample.zip","projectTypeName":"com.intel.xdk.projecttype.jsapp"}-->
 <preference name="debuggable" value="false"/>
 <platform name="ios">
     <!-- below requires the splash screen plugin -->
