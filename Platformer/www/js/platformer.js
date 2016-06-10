@@ -232,8 +232,11 @@
             ny        = entity.y%TILE,
             cell      = tcell(tx,     ty),      //index of tile containing player
             cellright = tcell(tx + 1, ty),      //index of tile right of player
+	    cellleft  = tcell(tx - 1, ty),
             celldown  = tcell(tx,     ty + 1),  //index of tile below player
-            celldiag  = tcell(tx + 1, ty + 1);  //index of tile down and right of player       
+            celldiag  = tcell(tx + 1, ty + 1);  //index of tile down and right of player
+	    celldiagL = tcell(tx - 1, ty + 1);
+	           
         
         if (entity.dy > 0) { // if falling
             if ((celldown && !cell) || (celldiag && !cellright && nx)) {
@@ -277,7 +280,20 @@
                 entity.left  = true;
             }
         }
-        entity.falling = ! (celldown || (nx && celldiag));
+
+	entity.falling = ! (celldown || (nx && celldiag));
+	
+	if (entity.player){
+
+	if (!falling && (celldiag) && !celldown && (nx < 7) && !cellright) { // butter
+                entity.x = entity.x - 1;		                
+            }
+	else if ((cellright || !celldiag) && (nx > 23) && !falling && celldown) {
+		entity.x = entity.x + 1;
+        
+	}
+	}
+        
     }
 
     //-------------------------------------------------------------------------
