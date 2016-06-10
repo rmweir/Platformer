@@ -47,8 +47,9 @@
         player   = {},
         monsters = [],
         treasure = [],
-        cTiles   = [],
-        ncTiles  = [];
+        cTiles   = [],  // collision tiles
+        ncTiles  = [],  // non-collision tiles
+        bTiles = [];    // background non-collision tiles
 
     //_______Sounds_________
    // 
@@ -89,6 +90,7 @@
     var playerColBuff = 0;
     
     var showFPS = true;
+    var playSound = false;
     
     var t2p      = function(t)     { return t*TILE;                     },
         p2t      = function(p)     { return Math.floor(p/TILE);         },
@@ -97,7 +99,10 @@
         tcell    = function(tx,ty) { return cTiles[tx + (ty*MAP.tw)];   }, //return array index of tile at t coord
         
         nccell   = function(x,y)   { return nctcell(p2t(x),p2t(y));     },
-        nctcell  = function(tx,ty) { return ncTiles[tx + (ty*MAP.tw)];  };
+        nctcell  = function(tx,ty) { return ncTiles[tx + (ty*MAP.tw)];  },
+    
+        bcell   = function(x,y)   { return btcell(p2t(x),p2t(y));       },
+        btcell  = function(tx,ty) { return bTiles[tx + (ty*MAP.tw)];    };
 
     //-------------------------------------------------------------------------
     // UPDATE LOOP
@@ -118,7 +123,7 @@
     }
 
     function updatePlayer(dt) {
-        // check goal amd collected treasure
+        // check goal and collected treasure
         if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) 
             && player.collected >= treasure.length) {
             console.log("GOAL REACHED!");
@@ -173,20 +178,6 @@
         return overlap(player.x + playerColBuff , player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff* 2, x, y, width, height);
     }
     
-    function nextLevel(){
-        player.x = 1000; // prevent multiple goal reached
-        player.y = 1000;
-        monsters = [],
-        treasure = [],
-        cTiles   = [],
-        ncTiles  = [];
-        
-        currentLevel++;
-        get("asset/levels/level" + currentLevel + ".json", function(req) {
-            setup(JSON.parse(req.responseText));
-        });
-    }
-
     function collectTreasure(t) {
         player.collected++;
         t.collected = true;
@@ -213,7 +204,7 @@
             entity.ddx = entity.ddx - friction;
 
         if (entity.jump && !entity.jumping && !falling) {
-            jumpSound.play();			       // jumpSound must go here to avoid firing inappropriately
+            if (playSound) jumpSound.play();		  // jumpSound must go here to avoid firing inappropriately
             entity.ddy = entity.ddy - entity.impulse; // an instant big force impulse   
             entity.jumping = true;
         }
@@ -287,10 +278,10 @@
 	
 	if (entity.player){
 
-	if (!falling && (celldiag) && !celldown && (nx < 7) && !cellright) { // butter
+	if (!falling && (celldiag) && !celldown && (nx < TILE * 7.0/32.0) && !cellright) { // butter
                 entity.x = entity.x - 1;		                
             }
-	else if ((cellright || !celldiag) && (nx > 23) && !falling && celldown) {
+	else if ((cellright || !celldiag) && (nx > TILE * 23.0/32.0) && !falling && celldown) {
 		entity.x = entity.x + 1;
         
 	}
@@ -316,13 +307,18 @@
             for(x = 0 ; x < MAP.tw ; x++) {
                 cell = tcell(x, y);
                 nccell = nctcell(x,y);
+                bcell = btcell(x,y);
+                if (bcell) {
+                    console.log("trying to draw background sprite");
+                    drawSprite(bcell - 1, x * TILE, y * TILE)
+                }
                 if (cell) {
                     drawSprite(cell - 1, x * TILE, y * TILE)
                 }
                 if (nccell) {
                     drawSprite(nccell - 1, x * TILE, y * TILE)
-
                 }
+                
             }
         }
         
@@ -439,6 +435,8 @@
                     ncTiles = layer.data; break;
                 case "objects" :
                     objects = layer.objects; break;
+                case "background" :
+                    bTiles = layer.data; break;
                 default :
                     console.log("That layer isn't handled."); break;
             }
@@ -489,6 +487,22 @@
         console.log("loaded entity");
         return entity;
     }
+    
+    function nextLevel(){
+        player.x = 1000; // prevent multiple goal reached
+        player.y = 1000;
+        monsters = [],
+        treasure = [],
+        cTiles   = [],
+        ncTiles  = [],
+        bTiles   = [];
+        
+        currentLevel++;
+        get("asset/levels/level" + currentLevel + ".json", function(req) {
+            setup(JSON.parse(req.responseText));
+        });
+    }
+
 
     //-------------------------------------------------------------------------
     // THE GAME LOOP
@@ -502,7 +516,7 @@
     if(!showFPS) fpsmeter.hide();
 
     function frame() {
-        themeMusic.play();
+        if (playSound) themeMusic.play();
         fpsmeter.tickStart();
         now = timestamp();
         dt = dt + Math.min(1, (now - last) / 1000);

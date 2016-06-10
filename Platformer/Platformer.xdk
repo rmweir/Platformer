@@ -5,7 +5,6 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1465516222222,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
