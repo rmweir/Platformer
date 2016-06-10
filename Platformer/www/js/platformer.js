@@ -48,14 +48,15 @@
         monsters = [],
         treasure = [],
         cTiles   = [],
-        ncTiles  = [],
-        goalTx, goalTy;
+        ncTiles  = [];
 
     //_______Sounds_________
    // 
 
     var jumpSound = document.getElementById("jumpSound");
     var themeMusic = document.getElementById("theme");
+    
+    
     var splashScreen = document.getElementById("splashScreen"); 
     var rightBtn = document.getElementById("rightBtn");
     var leftBtn = document.getElementById("leftBtn");
@@ -80,6 +81,7 @@
     
     //_______Other_________
    // 
+    var currentMap;
     var currentLevel = 1;
     var playerLives = 6;
     var MAX_LIVES = 6;
@@ -117,7 +119,7 @@
 
     function updatePlayer(dt) {
         // check goal amd collected treasure
-        if (overlap(player.x, player.y, TILE, TILE, goalTx * TILE, goalTy * TILE, TILE, TILE) 
+        if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) 
             && player.collected >= treasure.length) {
             console.log("GOAL REACHED!");
             nextLevel();
@@ -423,6 +425,11 @@
         console.log("setting up map " + currentLevel);
         var objects, n, obj, entity;
         
+        currentMap = map;
+        console.log(map.width + "    " + map.height);
+        MAP.tw = map.width;
+        MAP.th = map.height;
+        
         for(var i = 0; i < map.layers.length; i++){
             var layer = map.layers[i];
             switch (layer.name){
@@ -436,10 +443,6 @@
                     console.log("That layer isn't handled."); break;
             }
         }
-        
-        goalTx = map.properties.goalTx;
-        goalTy = map.properties.goalTy;
-        console.log(goalTx + "   " + goalTy);
 
         for(n = 0 ; n < objects.length ; n++) {
             obj = objects[n];
