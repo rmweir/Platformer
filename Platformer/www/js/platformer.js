@@ -278,7 +278,7 @@
 	
 	if (entity.player){
 
-	if (!falling && (celldiag) && !celldown && (nx < TILE * 7.0/32.0) && !cellright) { // butter
+	if (!falling && (celldiag) && !celldown && (nx < TILE * 7.0/32.0) && !cellright && (entity.x > 2)) { // butter
                 entity.x = entity.x - 1;		                
             }
 	else if ((cellright || !celldiag) && (nx > TILE * 23.0/32.0) && !falling && celldown) {
