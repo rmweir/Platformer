@@ -69,15 +69,15 @@
    // 
 
     var spritesheet = new Image();
-    spritesheet.src = "asset/sprites/spritesheet_no_space.png";
+    spritesheet.src = "asset/sprites/spritesheet_city.png";
     
-    var playerSprite = 112,
-        monsterSprite = 189,
-        treasureSprite = 440,
-        emptyTreasureSprite = 441,
-        heartSprite = 134,
-        halfHeartSprite = 135,
-        emptyHeartSprite = 136;
+    var playerSprite = 61,
+        monsterSprite = 110,
+        treasureSprite = 145,
+        emptyTreasureSprite = 144,
+        heartSprite = 26,
+        halfHeartSprite = 27,
+        emptyHeartSprite = 28;
 
     
     //_______Other_________
