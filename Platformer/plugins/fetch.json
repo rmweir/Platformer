@@ -1,1 +1,18 @@
-{}
+{
+    "cordova-plugin-indexedDB": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-indexeddb"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "cordova-plugin-websql": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-websql"
+        },
+        "is_top_level": false,
+        "variables": {}
+    }
+}

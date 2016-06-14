@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1465516222222,
+      "lastModifiedDate": 1465923015248,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -31,7 +31,50 @@
     "libraries": [],
     "serviceMethods": [],
     "cordovaPluginsDirectory": "plugins",
-    "cordovaPlugins": [],
+    "cordovaPlugins": [
+      {
+        "id": "cordova-plugin-indexedDB",
+        "name": "IndexedDB polyfill",
+        "version": "0.1.2",
+        "originType": "cordova.io",
+        "origin": "cordova-plugin-indexeddb",
+        "gitref": "",
+        "paramvals": {},
+        "sourceLocation": "plugins/cordova-plugin-indexedDB",
+        "selectedState": "Included",
+        "checksum": "217dce9a",
+        "dependsOn": [
+          "cordova-plugin-websql"
+        ],
+        "topLevel": true,
+        "permissions": {},
+        "description": "IndexedDB plugin for Apache Cordova",
+        "data": {},
+        "dependedBy": [],
+        "custom": "true"
+      },
+      {
+        "id": "cordova-plugin-websql",
+        "name": "Web SQL plugin",
+        "version": "0.0.10",
+        "originType": "cordova.io",
+        "origin": "cordova-plugin-websql",
+        "gitref": "",
+        "paramvals": {},
+        "sourceLocation": "plugins/cordova-plugin-websql",
+        "selectedState": "Included",
+        "checksum": "edd4a84a",
+        "dependsOn": [],
+        "topLevel": false,
+        "permissions": {},
+        "description": "Web Sql Plugin for Apache Cordova",
+        "data": {},
+        "dependedBy": [
+          "cordova-plugin-indexedDB"
+        ],
+        "custom": "true"
+      }
+    ],
     "buildConfigurations": {
       "iOS": {
         "platform_": "ios",
