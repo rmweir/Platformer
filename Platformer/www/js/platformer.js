@@ -1,28 +1,5 @@
-(function() { // module pattern
-    console.log("_________________starting game_________________");
-
-    /* TODO 
-        - more levels
-        - score/tally
-        - handle final level
-        - splash screen on start(will have done by 6/4/2016 11:59pm
+(function() {
     
-    */
-    
-    //-------------------------------------------------------------------------
-    // POLYFILLS
-    //-------------------------------------------------------------------------
-  
-    if (!window.requestAnimationFrame) { // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-    window.requestAnimationFrame = window.webkitRequestAnimationFrame || 
-                                   window.mozRequestAnimationFrame    || 
-                                   window.oRequestAnimationFrame      || 
-                                   window.msRequestAnimationFrame     || 
-                                   function(callback, element) {
-                                     window.setTimeout(callback, 1000 / 60);
-                                   }
-  }
-
     //-------------------------------------------------------------------------
     // GAME CONSTANTS AND VARIABLES
     //-------------------------------------------------------------------------
@@ -40,10 +17,14 @@
 
     var fps      = 60,
         step     = 1/fps,
-        canvas   = document.getElementById('canvas'),
-        ctx      = canvas.getContext('2d'),
-        width    = canvas.width  = MAP.tw * TILE,
-        height   = canvas.height = MAP.th * TILE,
+        canvas_static  = document.getElementById('game_static'),
+        canvas_dynamic = document.getElementById('game_dynamic'),
+        canvas_ui   = document.getElementById('game_ui'),
+        ctx_static  = canvas_static.getContext('2d'),
+        ctx_dynamic = canvas_dynamic.getContext('2d'),
+        ctx_ui      = canvas_ui.getContext('2d'),
+        width    = canvas_static.width  = canvas_dynamic.width  = MAP.tw * TILE,
+        height   = canvas_static.height  = canvas_dynamic.height = MAP.th * TILE,
         player   = {},
         monsters = [],
         treasure = [],
@@ -57,19 +38,14 @@
     var jumpSound = document.getElementById("jumpSound");
     var themeMusic = document.getElementById("theme");
     
-    
     var splashScreen = document.getElementById("splashScreen"); 
-    var rightBtn = document.getElementById("rightBtn");
-    var leftBtn = document.getElementById("leftBtn");
-    var upBtn = document.getElementById("upBtn");
 
-    
 
     //_______Sprites_________
    // 
 
     var spritesheet = new Image();
-    spritesheet.src = "asset/sprites/spritesheet_city.png";
+    spritesheet.src = "asset/sprites/spritesheet_old.png";
     
     var playerSprite = 61,
         monsterSprite = 110,
@@ -78,7 +54,37 @@
         heartSprite = 26,
         halfHeartSprite = 27,
         emptyHeartSprite = 28;
-
+    
+    //_______UI Elements_________
+    
+    var w = canvas_ui.width = window.innerWidth;
+    var h = canvas_ui.height = window.innerHeight;
+    
+    console.log("w: " + w + "  h: " + h );
+   
+    function uiElement(name, x, y, width, height){ //maybe add onpress function, name
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.sprite = new Image();
+    }
+    uiElement.prototype.contains = function(x,  y){
+        return ( x >= this.x && y >= this.y && x <= (this.x + this.width) && y <= (this.y + this.height) );
+    };
+    
+    var upBtn = new uiElement("up", w - w/10, h - w/10, w/10, w/10);
+    (upBtn.sprite).src = "asset/sprites/up.png";
+    
+    var leftBtn = new uiElement("left", 0, h - w/10, w/10, w/10);
+    (leftBtn.sprite).src = "asset/sprites/left.png";
+    
+    var rightBtn = new uiElement("right", w/10 + w/20, h - w/10, w/10, w/10);
+    (rightBtn.sprite).src = "asset/sprites/right.png";
+    
+    
+    
     
     //_______Other_________
    // 
@@ -293,15 +299,16 @@
     // RENDERING
     //-------------------------------------------------------------------------
   
-    function render(ctx, frame, dt) {
-        ctx.clearRect(0, 0, width, height);
-        renderMap(ctx);
-        renderTreasure(ctx, frame);
-        renderPlayer(ctx, dt);
-        renderMonsters(ctx, dt);
+    function render(frame, dt) {
+        ctx_dynamic.clearRect(0, 0, width, height);
+        renderTreasure(ctx_dynamic, frame);
+        renderPlayer(ctx_dynamic, dt);
+        renderMonsters(ctx_dynamic, dt);
+        
     }
 
     function renderMap(ctx) {
+        console.log("RENDERING MAP");
         var x, y, cell;
         for(y = 0 ; y < MAP.th ; y++) {
             for(x = 0 ; x < MAP.tw ; x++) {
@@ -309,53 +316,64 @@
                 nccell = nctcell(x,y);
                 bcell = btcell(x,y);
                 if (bcell) {
-                    console.log("trying to draw background sprite");
-                    drawSprite(bcell - 1, x * TILE, y * TILE)
+                    drawSprite(bcell - 1, x * TILE, y * TILE, ctx)
                 }
                 if (cell) {
-                    drawSprite(cell - 1, x * TILE, y * TILE)
+                    drawSprite(cell - 1, x * TILE, y * TILE, ctx)
                 }
                 if (nccell) {
-                    drawSprite(nccell - 1, x * TILE, y * TILE)
+                    drawSprite(nccell - 1, x * TILE, y * TILE, ctx)
                 }
                 
             }
-        }
+        } 
+    }
+    
+    function renderUi() {
+        ctx_ui.setLineDash([6]);
         
+        ctx_ui.drawImage(upBtn.sprite, upBtn.x, upBtn.y, upBtn.width, upBtn.height);
+        ctx_ui.strokeRect(upBtn.x, upBtn.y, upBtn.width, upBtn.height);
+        
+        ctx_ui.drawImage(leftBtn.sprite, leftBtn.x, leftBtn.y, leftBtn.width, leftBtn.height);
+        ctx_ui.strokeRect(leftBtn.x, leftBtn.y, leftBtn.width, leftBtn.height);
+        
+        ctx_ui.drawImage(rightBtn.sprite, rightBtn.x, rightBtn.y, rightBtn.width, rightBtn.height);
+        ctx_ui.strokeRect(rightBtn.x, rightBtn.y, rightBtn.width, rightBtn.height);
     }
  
     function renderPlayer(ctx, dt) {
-        drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt) );
+        drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt), ctx);
         
         //ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
 
-        renderScores();
+        renderScores(ctx);
     }
     
-    function renderScores(){
+    function renderScores(ctx){
         var n, max;
         var scale = .75;
         
         // Draw collected treasure
         for(n = 0, max = player.collected ; n < treasure.length ; n++){
             if(n < max)
-                drawSpriteScaled(treasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale);
+                drawSpriteScaled(treasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale, ctx);
             else
-                drawSpriteScaled(emptyTreasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale);
+                drawSpriteScaled(emptyTreasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale, ctx);
         }
         // Draw slain monsters
         for(n = 0, max = player.killed ; n < max ; n++)
-            drawSpriteScaled(monsterSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 1), TILE * scale, TILE * scale); 
+            drawSpriteScaled(monsterSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 1), TILE * scale, TILE * scale, ctx); 
         
         //Draw lives
         for(n = 0; n < Math.floor(MAX_LIVES / 2) ; n++){
-            drawSpriteScaled(emptyHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
+            drawSpriteScaled(emptyHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale, ctx);
         }
         for(n = 0; n < Math.floor(playerLives / 2) ; n++){
-            drawSpriteScaled(heartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
+            drawSpriteScaled(heartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale, ctx);
         }
         if (playerLives % 2 != 0)
-            drawSpriteScaled(halfHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale);
+            drawSpriteScaled(halfHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale, ctx);
         
         
         
@@ -366,9 +384,10 @@
         for(n = 0, max = monsters.length ; n < max ; n++) {
             monster = monsters[n];
             if (!monster.dead){
-                drawSprite(monsterSprite, monster.x + (monster.dx * dt), monster.y + (monster.dy * dt));
+                drawSprite(monsterSprite, monster.x + (monster.dx * dt), monster.y + (monster.dy * dt), ctx);
             }
         }
+
     }
 
     function renderTreasure(ctx, frame) {
@@ -377,7 +396,7 @@
         for(n = 0, max = treasure.length ; n < max ; n++) {
             t = treasure[n];
             if (!t.collected)
-                drawSprite(treasureSprite, t.x, t.y );
+                drawSprite(treasureSprite, t.x, t.y, ctx);
         }
         ctx.globalAlpha = 1;
     }
@@ -388,13 +407,13 @@
         return pulse < half ? (pulse/half) : 1-(pulse-half)/half;
     }
     
-    function drawSprite(tileNum, x , y){
+    function drawSprite(tileNum, x , y, ctx){
         var sx = t2p(tileNum % (spritesheet.width / TILE));
         var sy = t2p(Math.floor(tileNum / (spritesheet.width / TILE)));
         ctx.drawImage(spritesheet, sx, sy, TILE, TILE, x, y, TILE, TILE);
     }
     
-    function drawSpriteScaled(tileNum, x , y, width, height){
+    function drawSpriteScaled(tileNum, x , y, width, height, ctx){
         var sx = t2p(tileNum % (spritesheet.width / TILE));
         var sy = t2p(Math.floor(tileNum / (spritesheet.width / TILE)));
         ctx.drawImage(spritesheet, sx, sy, TILE, TILE, x, y, width, height);
@@ -415,6 +434,7 @@
 		element.style.filter = 'alpha(opacity ='+opacity*100+")";
            opacity-= opacity* 0.1;
 		}, 50);
+        element.style.zIndex = 0;
     }
 
     function setup(map) {
@@ -461,6 +481,9 @@
                   break;
             }
         }
+        ctx_static.clearRect(0, 0, width, height);
+        renderMap(ctx_static);
+        renderUi();
     }
 
     function setupEntity(obj) {
@@ -499,7 +522,7 @@
         bTiles   = [];
         
         currentLevel++;
-        get("asset/levels/level" + currentLevel + ".json", function(req) {
+        get("asset/levels/old/level" + currentLevel + ".json", function(req) {
             setup(JSON.parse(req.responseText));
         });
     }
@@ -517,7 +540,6 @@
     if(!showFPS) fpsmeter.hide();
 
     function frame() {
-        if (playSound) themeMusic.play();
         fpsmeter.tickStart();
         now = timestamp();
         dt = dt + Math.min(1, (now - last) / 1000);
@@ -526,69 +548,112 @@
             update(step);
         }
 
-        render(ctx, counter, dt);
+        render(counter, dt);
         last = now;
         counter++;
         fpsmeter.tick();
-        requestAnimationFrame(frame, canvas);
+        requestAnimationFrame(frame);
     }
+    
+    var upID, leftID, rightID;
 
     function touchHandler(e) {
         e.preventDefault();
         var type = e.type;
-        var id = e.target.id;
-        //console.log("touchevent! - " + id + "      " + type);
-        switch (id){
-            case 'rightBtn':
-                if(type == 'touchstart') onkey(e, KEY.RIGHT, true);
-                else if(type == 'touchend') onkey(e, KEY.RIGHT, false);	
-                break;
-            case 'leftBtn':
-                if(type == 'touchstart') onkey(e, KEY.LEFT, true);
-                else if(type == 'touchend') onkey(e, KEY.LEFT, false);	
-                break;
-            case 'upBtn':
-                //console.log("up done");
-                if(type == 'touchstart') onkey(e, KEY.SPACE, true);
-                else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
-                break;
-	    case 'splashScreen':
-		
-		if(type == 'touchstart') 
-		{}
-		else if (type == 'touchend'){
- 			fadeOut(splashScreen);
-			
-	        }
-			rightBtn.style.visibility = "visible";
-			leftBtn.style.visibility = "visible";
-			upBtn.style.visibility = "visible";
-		break;
-            default:
-                break;
+    
+        if(type == 'touchstart') {
+            for (i = 0; i < (e.touches).length; i++) {
+                var touch = e.touches[i];
+                var x = touch.pageX;
+                var y = touch.pageY;
+                checkButtons(x, y, touch);
+            }
+        }
+        else if (type == 'touchend') {
+            player.jump = false;
+            player.right = false;
+            player.left = false;
+            var i;
+            for (i = 0; i < (e.touches).length; i++) {
+                var touch = e.touches[i];
+                var touchID = touch.identifier;
+                switch (touchID){
+                    case rightID:
+                        player.right = true;
+                        break;
+                    case leftID:
+                        player.left = true;
+                        break;
+                    case upID:
+                        player.jump = true;	
+                        break;
+                    default:
+                        console.log("ID gone");
+                        break;
+                }
+            }
+        }
+        
+    }
+    
+    function splashScreenTouch(e){
+        e.preventDefault();
+        fadeOut(splashScreen);
+    }
+    
+    function checkButtons(x, y, touch){
+        if(upBtn.contains(x,y)){
+            console.log("UP");
+            player.jump = true;
+            upID = touch.identifier;
+        }
+        else if(leftBtn.contains(x,y)){
+            console.log("LEFT");
+            player.left = true;
+            leftID = touch.identifier;
+        }
+        else if(rightBtn.contains(x,y)){
+            console.log("RIGHT");
+            player.right = true;
+            rightID = touch.identifier;
         }
     }
+    
+    function addListeners() {
+        document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
+        document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
 
-    document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
-    document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
+        document.addEventListener('touchstart', touchHandler, false);
+        document.addEventListener('touchend', touchHandler, false);
+        
+        splashScreen.addEventListener('touchstart', splashScreenTouch, false);
+        splashScreen.addEventListener('touchend', splashScreenTouch, false);
+        
+    }
 
-    document.getElementById("rightBtn").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("rightBtn").addEventListener('touchend', touchHandler, false);
 
-    document.getElementById("leftBtn").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("leftBtn").addEventListener('touchend', touchHandler, false);
-
-    document.getElementById("upBtn").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("upBtn").addEventListener('touchend', touchHandler, false);
-  
-    splashScreen.addEventListener('touchStart', touchHandler, false);
-    splashScreen.addEventListener('touchend', touchHandler, false);
-
-    get("asset/levels/level" + currentLevel + ".json", function(req) {
-        setup(JSON.parse(req.responseText));
-        frame();
-    });
-
+    function startGame() {
+        console.log("_____________________________STARTING GAME_____________________________");
+         if (!window.requestAnimationFrame) {
+            window.requestAnimationFrame =  window.webkitRequestAnimationFrame || 
+                                            window.mozRequestAnimationFrame    || 
+                                            window.oRequestAnimationFrame      || 
+                                            window.msRequestAnimationFrame     || 
+                                            function(callback, element) {
+                                                window.setTimeout(callback, 1000 / 60);
+                                            }
+        }
+        if (playSound) themeMusic.play();
+        
+        addListeners();
+        //fadeOut(splashScreen);
+        
+        get("asset/levels/old/level" + currentLevel + ".json", function(req) {
+            setup(JSON.parse(req.responseText));
+            frame();
+        });
+    }
+    
     //-------------------------------------------------------------------------
     // UTILITIES
     //-------------------------------------------------------------------------
@@ -617,5 +682,7 @@
                  ((y1 + h1 - 1) < y2) ||
                  ((y2 + h2 - 1) < y1))
     }
+    
+    startGame();
 
 })();

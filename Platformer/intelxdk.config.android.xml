@@ -8,7 +8,6 @@
 <description>Use this template to start creating mobile game web apps.</description>
 <author>Intel XDK</author>
 <content src="index.html"/>
-<intelxdk:plugin intelxdk:name="Screen Orientation" intelxdk:value="cordova-plugin-screen-orientation" intelxdk:version="1.4.0" intelxdk:checksum="43f9954b" intelxdk:type="file"/>
 <intelxdk:plugin intelxdk:name="Cordova Legacy Whitelist Plugin (added by Intel XDK)" intelxdk:value="cordova-plugin-legacy-whitelist" intelxdk:version="1.1.1"/>
 <preference name="android-minSdkVersion" value="14"/>
 <preference name="android-targetSdkVersion" value="21"/>
@@ -22,10 +21,9 @@
 <platform name="ios">
     <!-- below requires the splash screen plugin -->
     <!-- docs: https://github.com/apache/cordova-plugin-splashscreen -->
-    <preference name="AutoHideSplashScreen" value="true"/>
-    <preference name="FadeSplashScreen" value="false"/>
-    <preference name="FadeSplashScreenDuration" value="2"/>
-    <preference name="ShowSplashScreenSpinner" value="false"/>
+    <preference name="SplashScreen" value="none"/>
+    <preference name="SplashScreenDelay" value="0"/>
+    <preference name="FadeSplashScreenDuration" value="0"/>
 
     <!-- below requires the status bar plugin -->
     <!-- docs: https://github.com/apache/cordova-plugin-statusbar -->
@@ -37,7 +35,7 @@
 <platform name="android">
     <!-- below requires the splash screen plugin -->
     <!-- docs: https://github.com/apache/cordova-plugin-splashscreen -->
-    <preference name="SplashMaintainAspectRatio" value="false"/>
+    <preference name="SplashMaintainAspectRatio" value="true"/>
 </platform>
 <intelxdk:crosswalk xmlns:intelxdk="http://xdk.intel.com/ns/v1" xwalk-command-line="--disable-pull-to-refresh-effect"/>
 <intelxdk:crosswalk xmlns:intelxdk="http://xdk.intel.com/ns/v1" xwalk-command-line="--ignore-gpu-blacklist"/></widget>
