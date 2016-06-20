@@ -47,9 +47,9 @@
     var spritesheet = new Image();
     spritesheet.src = "asset/sprites/spritesheet_combined.png";
     
-    var playerSprite = 61,
+    var playerSprite = 1141,
         monsterSprite = 110,
-        treasureSprite = 145,
+        treasureSprite = 1128,
         emptyTreasureSprite = 144,
         heartSprite = 26,
         halfHeartSprite = 27,
