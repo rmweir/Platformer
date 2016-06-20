@@ -28,9 +28,11 @@
         player   = {},
         monsters = [],
         treasure = [],
-        cTiles   = [],  // collision tiles
-        ncTiles  = [],  // non-collision tiles
-        bTiles = [];    // background non-collision tiles
+        cTiles   = [],     // collision tiles
+        bg1Tiles = [],    // non-collision tiles
+        bg2Tiles = [],     // background non-collision tiles
+        bg3Tiles = [];     // background non-collision tiles
+
 
     //_______Sounds_________
    // 
@@ -99,16 +101,31 @@
     var playSound = false;
     
     var t2p      = function(t)     { return t*TILE;                     },
-        p2t      = function(p)     { return Math.floor(p/TILE);         },
+        p2t      = function(p)     { return Math.floor(p/TILE);         };
         
-        cell     = function(x,y)   { return tcell(p2t(x),p2t(y));       },
-        tcell    = function(tx,ty) { return cTiles[tx + (ty*MAP.tw)];   }, //return array index of tile at t coord
-        
-        nccell   = function(x,y)   { return nctcell(p2t(x),p2t(y));     },
-        nctcell  = function(tx,ty) { return ncTiles[tx + (ty*MAP.tw)];  },
-    
-        bcell   = function(x,y)   { return btcell(p2t(x),p2t(y));       },
-        btcell  = function(tx,ty) { return bTiles[tx + (ty*MAP.tw)];    };
+    function cell(x,y, layer) { 
+        return tcell(p2t(x),p2t(y), layer);  
+    }
+
+    function tcell(tx,ty, layer) {
+        switch(layer){
+            case "col":
+                return cTiles[tx + (ty*MAP.tw)]; 
+                break;
+            case "bg1":
+                return bg1Tiles[tx + (ty*MAP.tw)]; 
+                break;
+            case "bg2":
+                return bg2Tiles[tx + (ty*MAP.tw)]; 
+                break;
+            case "bg3":
+                return bg3Tiles[tx + (ty*MAP.tw)]; 
+                break;
+            default:
+                return null;
+                break;
+        }
+    }
 
     //-------------------------------------------------------------------------
     // UPDATE LOOP
@@ -309,22 +326,18 @@
 
     function renderMap(ctx) {
         console.log("RENDERING MAP");
-        var x, y, cell;
+        var x, y, cTile, bg1Tile, bg2Tile, bg3Tile;
         for(y = 0 ; y < MAP.th ; y++) {
             for(x = 0 ; x < MAP.tw ; x++) {
-                cell = tcell(x, y);
-                nccell = nctcell(x,y);
-                bcell = btcell(x,y);
-                if (bcell) {
-                    drawSprite(bcell - 1, x * TILE, y * TILE, ctx)
-                }
-                if (cell) {
-                    drawSprite(cell - 1, x * TILE, y * TILE, ctx)
-                }
-                if (nccell) {
-                    drawSprite(nccell - 1, x * TILE, y * TILE, ctx)
-                }
-                
+                cTile = tcell(x, y, cTiles);
+                bg1Tile = tcell(x, y, bg1Tiles);
+                bg2Tile = tcell(x, y, bg2Tiles);
+                bg3Tile = tcell(x, y, bg3Tiles);
+                // order below is important
+                if (bg3Tile) drawSprite(bg1Tile - 1, x * TILE, y * TILE, ctx);
+                if (bg2Tile) drawSprite(bg2Tile - 1, x * TILE, y * TILE, ctx);
+                if (bg1Tile) drawSprite(bg3Tile - 1, x * TILE, y * TILE, ctx);
+                if (cTile) drawSprite(cTile - 1, x * TILE, y * TILE, ctx);
             }
         } 
     }
@@ -452,12 +465,15 @@
             switch (layer.name){
                 case "cTiles" :
                     cTiles = layer.data; break;
-                case "ncTiles" :
-                    ncTiles = layer.data; break;
+                case "bg1" :
+                    bg1Tiles = layer.data; break;
+                case "bg2" :
+                    bg2Tiles = layer.data; break;
+                case "bg3" :
+                    bg3Tiles = layer.data; break;
                 case "objects" :
                     objects = layer.objects; break;
-                case "background" :
-                    bTiles = layer.data; break;
+                
                 default :
                     console.log("That layer isn't handled."); break;
             }
@@ -518,8 +534,9 @@
         monsters = [],
         treasure = [],
         cTiles   = [],
-        ncTiles  = [],
-        bTiles   = [];
+        bg1Tiles  = [],
+        bg2Tiles  = [],
+        bg3Tiles  = [];
         
         currentLevel++;
         get("asset/levels/old/level" + currentLevel + ".json", function(req) {
@@ -570,6 +587,7 @@
             }
         }
         else if (type == 'touchend') {
+            //console.log("TOUCH END");
             player.jump = false;
             player.right = false;
             player.left = false;
@@ -593,6 +611,8 @@
                 }
             }
         }
+        console.log("jump:" + player.jump + "     right:" + player.right + "     left:" + player.left);
+
         
     }
     
@@ -603,17 +623,17 @@
     
     function checkButtons(x, y, touch){
         if(upBtn.contains(x,y)){
-            console.log("UP");
+            //console.log("UP");
             player.jump = true;
             upID = touch.identifier;
         }
         else if(leftBtn.contains(x,y)){
-            console.log("LEFT");
+            //console.log("LEFT");
             player.left = true;
             leftID = touch.identifier;
         }
         else if(rightBtn.contains(x,y)){
-            console.log("RIGHT");
+            //console.log("RIGHT");
             player.right = true;
             rightID = touch.identifier;
         }
