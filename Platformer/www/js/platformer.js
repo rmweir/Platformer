@@ -45,7 +45,7 @@
    // 
 
     var spritesheet = new Image();
-    spritesheet.src = "asset/sprites/spritesheet_old.png";
+    spritesheet.src = "asset/sprites/spritesheet_combined.png";
     
     var playerSprite = 61,
         monsterSprite = 110,
@@ -522,7 +522,7 @@
         bTiles   = [];
         
         currentLevel++;
-        get("asset/levels/old/level" + currentLevel + ".json", function(req) {
+        get("asset/levels/level" + currentLevel + ".json", function(req) {
             setup(JSON.parse(req.responseText));
         });
     }
@@ -648,7 +648,7 @@
         addListeners();
         //fadeOut(splashScreen);
         
-        get("asset/levels/old/level" + currentLevel + ".json", function(req) {
+        get("asset/levels/level" + currentLevel + ".json", function(req) {
             setup(JSON.parse(req.responseText));
             frame();
         });
