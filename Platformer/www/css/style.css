@@ -18,10 +18,10 @@ canvas {
     z-index: 1;
 }
 #game_dynamic {
-    z-index: 2;
+    z-index: 200;
 }
 #game_ui {
-    z-index: 3;
+    z-index: 300;
 }
 
 #splashScreen {
@@ -30,7 +30,7 @@ canvas {
     height: 100%;
     background-image: url("../asset/splashscreen/introsplash.png");
     background-size: cover;
-    z-index: 4;
+    z-index: 400;
 }
 
 

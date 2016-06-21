@@ -29,9 +29,9 @@
         monsters = [],
         treasure = [],
         cTiles   = [],     // collision tiles
-        bg1Tiles = [],    // non-collision tiles
-        bg2Tiles = [],     // background non-collision tiles
-        bg3Tiles = [];     // background non-collision tiles
+        bg1Tiles = [],    
+        bg2Tiles = [], 
+        bg3Tiles = [];    
 
 
     //_______Sounds_________
@@ -79,10 +79,10 @@
     var upBtn = new uiElement("up", w - w/10, h - w/10, w/10, w/10);
     (upBtn.sprite).src = "asset/sprites/up.png";
     
-    var leftBtn = new uiElement("left", 0, h - w/10, w/10, w/10);
+    var leftBtn = new uiElement("left", 10, h - w/10 - 10, w/10, w/10);
     (leftBtn.sprite).src = "asset/sprites/left.png";
     
-    var rightBtn = new uiElement("right", w/10 + w/20, h - w/10, w/10, w/10);
+    var rightBtn = new uiElement("right", 10 + w/10 + w/20, h - w/10 - 10, w/10, w/10);
     (rightBtn.sprite).src = "asset/sprites/right.png";
     
     
@@ -246,12 +246,12 @@
             ty        = p2t(entity.y),
             nx        = entity.x%TILE,          //depth of player into tile 
             ny        = entity.y%TILE,
-            cell      = tcell(tx,     ty),      //index of tile containing player
-            cellright = tcell(tx + 1, ty),      //index of tile right of player
-	    cellleft  = tcell(tx - 1, ty),
-            celldown  = tcell(tx,     ty + 1),  //index of tile below player
-            celldiag  = tcell(tx + 1, ty + 1);  //index of tile down and right of player
-	    celldiagL = tcell(tx - 1, ty + 1);
+            cell      = tcell(tx, ty, 'col'),      //index of tile containing player
+            cellright = tcell(tx + 1, ty, 'col'),      //index of tile right of player
+	        cellleft  = tcell(tx - 1, ty, 'col'),
+            celldown  = tcell(tx,     ty + 1, 'col'),  //index of tile below player
+            celldiag  = tcell(tx + 1, ty + 1, 'col'),  //index of tile down and right of player
+	        celldiagL = tcell(tx - 1, ty + 1, 'col');
 	           
         
         if (entity.dy > 0) { // if falling
@@ -329,14 +329,14 @@
         var x, y, cTile, bg1Tile, bg2Tile, bg3Tile;
         for(y = 0 ; y < MAP.th ; y++) {
             for(x = 0 ; x < MAP.tw ; x++) {
-                cTile = tcell(x, y, cTiles);
-                bg1Tile = tcell(x, y, bg1Tiles);
-                bg2Tile = tcell(x, y, bg2Tiles);
-                bg3Tile = tcell(x, y, bg3Tiles);
+                cTile = tcell(x, y, 'col');
+                bg1Tile = tcell(x, y, 'bg1');
+                bg2Tile = tcell(x, y, 'bg2');
+                bg3Tile = tcell(x, y, 'bg3');
                 // order below is important
-                if (bg3Tile) drawSprite(bg1Tile - 1, x * TILE, y * TILE, ctx);
+                if (bg3Tile) drawSprite(bg3Tile - 1, x * TILE, y * TILE, ctx);
                 if (bg2Tile) drawSprite(bg2Tile - 1, x * TILE, y * TILE, ctx);
-                if (bg1Tile) drawSprite(bg3Tile - 1, x * TILE, y * TILE, ctx);
+                if (bg1Tile) drawSprite(bg1Tile - 1, x * TILE, y * TILE, ctx);
                 if (cTile) drawSprite(cTile - 1, x * TILE, y * TILE, ctx);
             }
         } 
@@ -416,7 +416,7 @@
 
     function tweenTreasure(frame, duration) {
         var half  = duration/2
-        pulse = frame % duration;
+        var pulse = frame % duration;
         return pulse < half ? (pulse/half) : 1-(pulse-half)/half;
     }
     
@@ -499,6 +499,7 @@
         }
         ctx_static.clearRect(0, 0, width, height);
         renderMap(ctx_static);
+
         renderUi();
     }
 
@@ -595,25 +596,21 @@
             for (i = 0; i < (e.touches).length; i++) {
                 var touch = e.touches[i];
                 var touchID = touch.identifier;
-                switch (touchID){
-                    case rightID:
-                        player.right = true;
-                        break;
-                    case leftID:
-                        player.left = true;
-                        break;
-                    case upID:
-                        player.jump = true;	
-                        break;
-                    default:
-                        console.log("ID gone");
-                        break;
+                
+                if (touchID == rightID){
+                    console.log("right id found");
+                    player.right = true;
+                }
+                if (touchID == leftID){
+                    console.log("left id found");
+                    player.left = true; 
+                }
+                if (touchID == upID){
+                    console.log("left id found");
+                    player.jump = true;  
                 }
             }
         }
-        console.log("jump:" + player.jump + "     right:" + player.right + "     left:" + player.left);
-
-        
     }
     
     function splashScreenTouch(e){
@@ -666,7 +663,7 @@
         if (playSound) themeMusic.play();
         
         addListeners();
-        //fadeOut(splashScreen);
+        fadeOut(splashScreen);
         
         get("asset/levels/level" + currentLevel + ".json", function(req) {
             setup(JSON.parse(req.responseText));
