@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1466471905853,
+      "lastModifiedDate": 1466537497262,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -226,7 +226,8 @@
           "android-targetSdkVersion": "21",
           "android-installLocation": "auto",
           "Orientation": "landscape",
-          "android-signed": true
+          "android-signed": true,
+          "Fullscreen": false
         },
         "isActive_": true,
         "appName_": "Platformer",
@@ -235,19 +236,20 @@
           "mode": "legacy",
           "network": [],
           "intents": [],
-          "navigation": []
+          "navigation": [],
+          "properties": {}
         },
         "icons_": [],
         "splashes_": [],
         "addlPermissions_": "",
         "excludedLibraries_": "",
-        "certificateId_": "",
+        "certificateId_": "XZtVinhCKkqTtP8eDRLo1g2",
         "iosProvs_": [],
         "cordovaCLIVersion_": "5.4.1",
         "crosswalkVersion_": "16",
         "appVersion_": "0.0.1",
-        "appDescription_": "Use this template to start creating mobile game web apps.",
-        "appAuthor_": "Intel XDK",
+        "appDescription_": "A game.",
+        "appAuthor_": "230 crew",
         "appVersionCode_": "1"
       }
     },
