@@ -75,15 +75,15 @@ function animatedSprite(standing, right, left) {
     
 var playerCenter = 1141,
     playerRight = [1103, 1104, 1105],
-    playerLeft = [];
+    playerLeft = [1177, 1178, 1179];
     
 var playerSprite = playerCenter,
-    monsterSprite = 110,
-    treasureSprite = 1128,
-    emptyTreasureSprite = 144,
-    heartSprite = 26,
-    halfHeartSprite = 27,
-    emptyHeartSprite = 28;
+    monsterSprite = 1467,
+    treasureSprite = 1214,
+    emptyTreasureSprite = 1215,
+    heartSprite = 1493,
+    halfHeartSprite = 1494,
+    emptyHeartSprite = 1495;
 
 
 //_______UI Elements_________
@@ -357,6 +357,7 @@ function render(frame, dt) {
     renderTreasure(ctx_dynamic, frame);
     renderPlayer(ctx_dynamic, dt);
     renderMonsters(ctx_dynamic, dt);
+    renderScores(ctx_dynamic);
 }
 
 function renderMap(ctx) {
@@ -383,34 +384,35 @@ function renderPlayer(ctx, dt) {
     drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt), ctx);
 
     //ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
-
-    renderScores(ctx);
 }
 
 function renderScores(ctx){
     var n, max;
+    var x = MAP.tw /2 + 3, y = MAP.th - 3; // tile location to start top right
+
     var scale = .75;
+    var size = TILE * scale;
 
     // Draw collected treasure
     for(n = 0, max = player.collected ; n < treasure.length ; n++){
         if(n < max)
-            drawSpriteScaled(treasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale, ctx);
+            drawSpriteScaled(treasureSprite, t2p(x) + n * size, t2p(y + 2), size, size, ctx);
         else
-            drawSpriteScaled(emptyTreasureSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 2), TILE * scale, TILE * scale, ctx);
+            drawSpriteScaled(emptyTreasureSprite, t2p(x) + n * size, t2p(y + 2), size, size, ctx);
     }
     // Draw slain monsters
     for(n = 0, max = player.killed ; n < max ; n++)
-        drawSpriteScaled(monsterSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 1), TILE * scale, TILE * scale, ctx); 
+        drawSpriteScaled(monsterSprite, t2p(x) + n * size, t2p(y + 1), size, size, ctx); 
 
     //Draw lives
     for(n = 0; n < Math.floor(MAX_LIVES / 2) ; n++){
-        drawSpriteScaled(emptyHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale, ctx);
+        drawSpriteScaled(emptyHeartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
     }
     for(n = 0; n < Math.floor(playerLives / 2) ; n++){
-        drawSpriteScaled(heartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale, ctx);
+        drawSpriteScaled(heartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
     }
     if (playerLives % 2 != 0)
-        drawSpriteScaled(halfHeartSprite, (TILE * 5) + n * TILE * scale, t2p(MAP.th - 3), TILE * scale, TILE * scale, ctx);
+        drawSpriteScaled(halfHeartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
 
 
 
