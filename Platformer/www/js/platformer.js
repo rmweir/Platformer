@@ -30,7 +30,8 @@ var fps      = 60,
     cTiles   = [],     // collision tiles
     bg1Tiles = [],    
     bg2Tiles = [], 
-    bg3Tiles = [];    
+    bg3Tiles = [];
+var gamePaused = false;
 
 
 //_______Sounds_________
@@ -123,7 +124,8 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
 var upBtn = new uiElement("up", w - w/10 - 10, h - w/10 - 10, w/10, w/10);
 var leftBtn = new uiElement("left", 10, h - w/10 - 10, w/10, w/10);
 var rightBtn = new uiElement("right", 10 + w/10 + w/20, h - w/10 - 10, w/10, w/10);
-var soundBtn = new uiElement("sound", w/2, h/2, w/20, w/20);
+var soundBtn = new uiElement("sound", w/2 - w/20 - 10, h - w/20 - 10, w/20, w/20);
+var pauseBtn = new uiElement("pause", w/2 + 10, h - w/20 - 10, w/20, w/20);
 
 
 //_______Other_________
@@ -376,6 +378,8 @@ function renderMap(ctx) {
 }
 
 function renderPlayer(ctx, dt) {
+    var dt = dt;
+    dt = 0; // disable  *dt to prevent jitter on pause
     drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt), ctx);
 
     //ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
@@ -413,6 +417,8 @@ function renderScores(ctx){
 }
 
 function renderMonsters(ctx, dt) {
+    var dt = dt;
+    dt = 0; // disable  *dt to prevent jitter on pause
     var n, max, monster;
     for(n = 0, max = monsters.length ; n < max ; n++) {
         monster = monsters[n];
@@ -581,13 +587,13 @@ function frame() {
     dt = dt + Math.min(1, (now - last) / 1000);
     while(dt > step) {
         dt = dt - step;
-        update(step);
+        if (!gamePaused) update(step);
     }
-
     render(counter, dt);
     last = now;
     counter++;
     fpsmeter.tick();
+
     requestAnimationFrame(frame);
 }
 
@@ -596,7 +602,7 @@ function touchHandler(e) {
     var type = e.type;
     var target = e.currentTarget;
     var id = target.id;
-    console.log("touchevent! - " + id + "      " + type);
+    //console.log("touchevent! - " + id + "      " + type);
     switch (id){
         case 'right':
             if(type == 'touchstart') onkey(e, KEY.RIGHT, true);
@@ -619,6 +625,16 @@ function touchHandler(e) {
                 } else {
                     themeMusic.fadeIn(0.1, fadeInTime);
                     soundBtn.image.src = "asset/sprites/sound.png";
+                }
+            }
+            break;
+        case 'pause':
+            if(type == 'touchstart') {
+                gamePaused = !gamePaused;
+                if(!gamePaused) {
+                    pauseBtn.image.src = "asset/sprites/pause.png";
+                } else {
+                    pauseBtn.image.src = "asset/sprites/play.png";
                 }
             }
             break;
@@ -645,6 +661,9 @@ function addListeners() {
   
     document.getElementById("sound").addEventListener('touchstart', touchHandler, false);
     document.getElementById("sound").addEventListener('touchend', touchHandler, false);
+    
+    document.getElementById("pause").addEventListener('touchstart', touchHandler, false);
+    document.getElementById("pause").addEventListener('touchend', touchHandler, false);
     
     splashScreen.addEventListener('touchStart', touchHandler, false);
     splashScreen.addEventListener('touchend', touchHandler, false);
