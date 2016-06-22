@@ -74,8 +74,8 @@ function animatedSprite(standing, right, left) {
 
     
 var playerCenter = 1141,
-    playerRight = [1103, 1104, 1105],
-    playerLeft = [1177, 1178, 1179];
+    playerRight = [1104, 1103, 1105],
+    playerLeft = [1178, 1177, 1179];
     
 var playerSprite = playerCenter,
     monsterSprite = 1467,
@@ -118,7 +118,6 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
     this.container.appendChild(this.image);   
     document.getElementById('game_ui').appendChild(this.container);    
 }
-    
 
 // Create UI Elements
 var upBtn = new uiElement("up", w - w/10 - 10, h - w/10 - 10, w/10, w/10);
@@ -184,7 +183,19 @@ function update(dt) {
     checkTreasure();
 }
 
+var rightFrame = 0, leftFrame = 0;
 function updatePlayer(dt) {
+    var advSprite = false;
+    if (counter % 5 == 0 && !player.jumping) advSprite = true;
+    
+    if (!player.right && !player.left) {
+        playerSprite = playerCenter;
+        rightFrame = leftFrame = 0;
+    } 
+    else if (player.right && advSprite) playerSprite = playerRight[rightFrame++ % playerRight.length];
+    else if (player.left && advSprite) playerSprite = playerLeft[leftFrame++ % playerLeft.length];
+    
+    
     // check goal and collected treasure
     if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) 
         && player.collected >= treasure.length) {
@@ -355,7 +366,7 @@ function updateEntity(entity, dt) {
 function render(frame, dt) {
     ctx_dynamic.clearRect(0, 0, width, height);
     renderTreasure(ctx_dynamic, frame);
-    renderPlayer(ctx_dynamic, dt);
+    renderPlayer(ctx_dynamic, dt, frame);
     renderMonsters(ctx_dynamic, dt);
     renderScores(ctx_dynamic);
 }
@@ -378,11 +389,8 @@ function renderMap(ctx) {
     } 
 }
 
-function renderPlayer(ctx, dt) {
-    var dt = dt;
-    dt = 0; // disable  *dt to prevent jitter on pause
-    drawSprite(playerSprite, player.x + (player.dx * dt), player.y + (player.dy * dt), ctx);
-
+function renderPlayer(ctx, dt, frame) {
+    drawSprite(playerSprite, player.x, player.y, ctx);
     //ctx.fillRect(player.x +  playerColBuff, player.y + playerColBuff, TILE - playerColBuff * 2, TILE - playerColBuff * 2);
 }
 
