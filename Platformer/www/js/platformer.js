@@ -36,22 +36,26 @@ var fps      = 60,
 //_______Sounds_________
 // 
     
-var jumpSound = new Audio('asset/sounds/jump.wav');
-var themeMusic = new Audio('asset/sounds/theme.wav');
-themeMusic.addEventListener('ended', function() {
-    this.currentTime = 0;
-    this.play();
-}, false);
-    
-var playSound = false;
+var themeMusic = new Howl({
+    urls: ['asset/sounds/theme.wav'],
+    //autoplay: true,
+    loop: true,
+    volume: 0.1,
+});
+var jumpSound = new Howl({
+    urls: ['asset/sounds/jump.wav'],
+    volume: 0.01,
+});
+var fadeInTime = 1000; // in ms
+var playSound = true;
 
 //_______Sprites_________
 // 
 
 var spritesheet = new Image();
-spritesheet.src = "asset/sprites/spritesheet_old.png";
+spritesheet.src = "asset/sprites/spritesheet_combined.png";
 
-///* old
+/* old sprite locations
 var playerSprite = 112,
     monsterSprite = 189,
     treasureSprite = 440,
@@ -59,16 +63,27 @@ var playerSprite = 112,
     heartSprite = 26,
     halfHeartSprite = 27,
     emptyHeartSprite = 28;
-///*
-/* new
-var playerSprite = 1141,
+ */
+    
+function animatedSprite(standing, right, left) {
+    
+}
+
+// Starting sprites
+
+    
+var playerCenter = 1141,
+    playerRight = [1103, 1104, 1105],
+    playerLeft = [];
+    
+var playerSprite = playerCenter,
     monsterSprite = 110,
     treasureSprite = 1128,
     emptyTreasureSprite = 144,
     heartSprite = 26,
     halfHeartSprite = 27,
     emptyHeartSprite = 28;
-*/
+
 
 //_______UI Elements_________
 
@@ -86,7 +101,7 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
     
     this.container = document.createElement("div");
     this.container.id = name;
-    this.container.style.backgroundColor = "yellow";
+    //this.container.style.backgroundColor = "yellow";
     this.container.style.position = "absolute";
     this.container.style.width = width + "px";
     this.container.style.height = height + "px";
@@ -102,6 +117,13 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
     this.container.appendChild(this.image);   
     document.getElementById('game_ui').appendChild(this.container);    
 }
+    
+
+// Create UI Elements
+var upBtn = new uiElement("up", w - w/10 - 10, h - w/10 - 10, w/10, w/10);
+var leftBtn = new uiElement("left", 10, h - w/10 - 10, w/10, w/10);
+var rightBtn = new uiElement("right", 10 + w/10 + w/20, h - w/10 - 10, w/10, w/10);
+var soundBtn = new uiElement("sound", w/2, h/2, w/20, w/20);
 
 
 //_______Other_________
@@ -113,7 +135,7 @@ var MAX_LIVES = 6;
 
 var playerColBuff = 0;
 
-var showFPS = true;
+var showFPS = false;
 
 var t2p      = function(t)     { return t*TILE;                     },
     p2t      = function(p)     { return Math.floor(p/TILE);         };
@@ -536,7 +558,7 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
-    get("asset/levels/old/level" + currentLevel + ".json", function(req) {
+    get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
     });
 }
@@ -588,19 +610,25 @@ function touchHandler(e) {
             if(type == 'touchstart') onkey(e, KEY.SPACE, true);
             else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
             break;
+        case 'sound':
+            if(type == 'touchstart') {
+                playSound = !playSound;
+                if(!playSound) {
+                    themeMusic.fadeOut(0, fadeInTime);
+                    soundBtn.image.src = "asset/sprites/sound_off.png";
+                } else {
+                    themeMusic.fadeIn(0.1, fadeInTime);
+                    soundBtn.image.src = "asset/sprites/sound.png";
+                }
+            }
+            break;
         case 'splashScreen':
             fadeOut(splashScreen);
             break;
         default:
             break;
     }
-    }
-
-function splashScreenTouch(e){
-    e.preventDefault();
-    fadeOut(splashScreen);
 }
-
 
 function addListeners() {
     document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
@@ -615,6 +643,9 @@ function addListeners() {
     document.getElementById("up").addEventListener('touchstart', touchHandler, false);
     document.getElementById("up").addEventListener('touchend', touchHandler, false);
   
+    document.getElementById("sound").addEventListener('touchstart', touchHandler, false);
+    document.getElementById("sound").addEventListener('touchend', touchHandler, false);
+    
     splashScreen.addEventListener('touchStart', touchHandler, false);
     splashScreen.addEventListener('touchend', touchHandler, false);
 
@@ -630,18 +661,12 @@ function startGame() {
                                         function(callback, element) {
                                             window.setTimeout(callback, 1000 / 60);
                                         }
-    }
-    if (playSound) themeMusic.play();
-    
-    // Create UI Elements
-    var upBtn = new uiElement("up", w - w/10 - 10, h - w/10 - 10, w/10, w/10);
-    var leftBtn = new uiElement("left", 10, h - w/10 - 10, w/10, w/10);
-    var rightBtn = new uiElement("right", 10 + w/10 + w/20, h - w/10 - 10, w/10, w/10);
-    
+    }    
     addListeners();
     fadeOut(splashScreen);
+    if (playSound) themeMusic.fadeIn(0.1, fadeInTime);
 
-    get("asset/levels/old/level" + currentLevel + ".json", function(req) {
+    get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
         ctx_static.clearRect(0, 0, width, height);
         renderMap(ctx_static);
