@@ -13,6 +13,15 @@
         
         <div id = "splashScreen"></div>
         
+        <script type='text/javascript'>
+           if((localStorage.getItem('level') === null) || ((localStorage.getItem('level') != '1') && (localStorage.getItem('level') != '2')
+                                                         && (localStorage.getItem('level') != '3')))
+            {
+                localStorage.setItem('level','1');
+            }
+            
+        </script>
+        
         <script src='cordova.js'></script> 
         <script src="js/fpsmeter.min.js"></script>
         <script src="js/howler.js"></script>

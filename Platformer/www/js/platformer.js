@@ -130,7 +130,7 @@ var pauseBtn = new uiElement("pause", w/2 + 10, h - w/20 - 10, w/20, w/20);
 //_______Other_________
 // 
 var currentMap;
-var currentLevel = 1;
+var currentLevel = parseInt(localStorage.getItem('level'));
 var playerLives = 6;
 var MAX_LIVES = 6;
 
@@ -574,6 +574,7 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
+    localStorage.setItem('level',currentLevel.toString());
     get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
     });
