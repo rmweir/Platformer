@@ -48,6 +48,14 @@ var jumpSound = new Howl({
     urls: ['asset/sounds/jump.wav'],
     volume: 0.01,
 });
+var grunt = new Howl({
+    urls: ['asset/sounds/grunt.mp3'],
+    volume: 0.5,
+});
+var beer = new Howl({
+    urls: ['asset/sounds/beer.mp3'],
+    volume: 0.5,
+});
 var fadeInTime = 1000; // in ms
 var playSound = true;
 
@@ -238,11 +246,12 @@ function killMonster(monster) {
 }
 
 function killPlayer(player) {
+    grunt.play();
     playerLives--;
     player.x = player.start.x;
     player.y = player.start.y;
     player.dx = player.dy = 0;
-
+    
     if (playerLives <= 0){
         //send back to level 1
     }
@@ -253,6 +262,7 @@ function playerOverlap(x, y, width, height){
 }
 
 function collectTreasure(t) {
+    beer.play();
     player.collected++;
     t.collected = true;
 }
