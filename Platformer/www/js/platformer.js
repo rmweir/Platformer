@@ -32,6 +32,7 @@ var fps      = 60,
     bg2Tiles = [], 
     bg3Tiles = [];
 var gamePaused = false;
+var saveProg = false;
 
 
 //_______Sounds_________
@@ -130,7 +131,7 @@ var pauseBtn = new uiElement("pause", w/2 + 10, h - w/20 - 10, w/20, w/20);
 //_______Other_________
 // 
 var currentMap;
-var currentLevel = parseInt(localStorage.getItem('level'));
+var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
 var playerLives = 6;
 var MAX_LIVES = 6;
 
@@ -574,7 +575,8 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
-    localStorage.setItem('level',currentLevel.toString());
+    if (saveProg) localStorage.setItem('level',currentLevel.toString());
+    
     get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
     });
