@@ -90,8 +90,13 @@
                  "type":"monster",
                  "visible":true,
                  "width":25,
+<<<<<<< Updated upstream
                  "x":385.5,
                  "y":308.5
+=======
+                 "x":509.438182429606,
+                 "y":290.417673859805
+>>>>>>> Stashed changes
                 }],
          "opacity":1,
          "type":"objectgroup",
