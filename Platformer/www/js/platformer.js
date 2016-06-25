@@ -585,6 +585,7 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
+    document.body.style.background = "#f3f3f3 url('') no-repeat right top";
     if (saveProg) localStorage.setItem('level',currentLevel.toString());
     
     get("asset/levels/level" + currentLevel + ".json", function(req) {
