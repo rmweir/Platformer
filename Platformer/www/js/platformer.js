@@ -380,6 +380,12 @@ function render(frame, dt) {
     renderPlayer(ctx_dynamic, dt, frame);
     renderMonsters(ctx_dynamic, dt);
     renderScores(ctx_dynamic);
+    
+    if (counter % 30 == 0) {
+        ctx_static.clearRect(0, 0, width, height);
+        renderMap(ctx_static);
+        
+    }
 }
 
 function renderMap(ctx) {
@@ -585,7 +591,6 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
-    document.body.style.background = "#f3f3f3 url('') no-repeat right top";
     if (saveProg) localStorage.setItem('level',currentLevel.toString());
     
     get("asset/levels/level" + currentLevel + ".json", function(req) {
