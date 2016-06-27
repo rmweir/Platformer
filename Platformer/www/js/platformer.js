@@ -86,8 +86,13 @@ var playerCenter = 1141,
     playerRight = [1104, 1103, 1105],
     playerLeft = [1178, 1177, 1179];
     
+var monsterRight = [1467, 1468],
+    monsterLeft = [1504, 1505],
+    monsterDead = 1469;
+
+    
 var playerSprite = playerCenter,
-    monsterSprite = 1467,
+    monsterSprite = monsterRight[0],
     treasureSprite = 1214,
     emptyTreasureSprite = 1215,
     heartSprite = 1493,
@@ -223,6 +228,7 @@ function updateMonsters(dt) {
 function updateMonster(monster, dt) {
     if (!monster.dead) {
         updateEntity(monster, dt);
+        if (counter % 5 == 0) monster.frame++;
         if (playerOverlap(monster.x, monster.y, TILE, TILE)) {
             if ((player.dy > 0) && (monster.y - player.y > TILE/2))
                 killMonster(monster);
@@ -450,6 +456,13 @@ function renderMonsters(ctx, dt) {
     for(n = 0, max = monsters.length ; n < max ; n++) {
         monster = monsters[n];
         if (!monster.dead){
+            
+            if (monster.frame % 2 == 0) {
+                monsterSprite = monster.left ? monsterLeft[0] : monsterRight[0];
+            }
+            else {
+                monsterSprite = monster.left ? monsterLeft[1] : monsterRight[1];
+            }
             drawSprite(monsterSprite, monster.x + (monster.dx * dt), monster.y + (monster.dy * dt), ctx);
         }
     }
@@ -575,7 +588,8 @@ function setupEntity(obj) {
     entity.right    = false;
 
     entity.start    = { x: obj.x, y: obj.y }
-    entity.killed = entity.collected = 0;
+    entity.killed   = entity.collected = 0;
+    entity.frame    = 0;
     console.log("loaded entity");
     return entity;
 }
