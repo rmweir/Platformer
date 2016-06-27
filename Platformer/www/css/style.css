@@ -1,7 +1,8 @@
 body, html { 
     height:100%; 
     background-image: url("../asset/background.png");
-    background-size: 100% 80%;
+    background-size: 100% 75%;
+    background-repeat: no-repeat;
     margin: 0; 
     padding: 0;
     }
