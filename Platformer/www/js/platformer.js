@@ -145,6 +145,7 @@ var pauseBtn = new uiElement("pause", w/2 + 10, h - w/20 - 10, w/20, w/20);
 // 
 var currentMap;
 var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
+var screenState = (currentLevel == 1) ? 0 : 3;
 var playerLives = 6;
 var MAX_LIVES = 6;
 
@@ -311,8 +312,8 @@ function updateEntity(entity, dt) {
 
     var tx        = p2t(entity.x),          //tile containing player
         ty        = p2t(entity.y),
-        nx        = entity.x%TILE,          //depth of player into tile 
-        ny        = entity.y%TILE,
+        nx        = entity.x % TILE,          //depth of player into tile 
+        ny        = entity.y % TILE,
         cell      = tcell(tx, ty, 'col'),      //index of tile containing player
         cellright = tcell(tx + 1, ty, 'col'),      //index of tile right of player
         cellleft  = tcell(tx - 1, ty, 'col'),
@@ -390,12 +391,11 @@ function render(frame, dt) {
     if (counter % 30 == 0) {
         ctx_static.clearRect(0, 0, width, height);
         renderMap(ctx_static);
-        
     }
 }
 
 function renderMap(ctx) {
-    console.log("RENDERING MAP");
+    //console.log("RENDERING MAP");
     var x, y, cTile, bg1Tile, bg2Tile, bg3Tile;
     for(y = 0 ; y < MAP.th ; y++) {
         for(x = 0 ; x < MAP.tw ; x++) {
@@ -682,8 +682,25 @@ function touchHandler(e) {
             }
             break;
         case 'splashScreen':
-            fadeOut(splashScreen);
-            break;
+            screenState++;
+            console.log("screenState: " + screenState);
+
+            if(screenState >= 3) {
+                fadeOut(splashScreen);
+                break;
+            }
+            
+            switch (screenState) {
+                case 0:
+                    splashScreen.style.backgroundImage = "url(asset/splashscreen/introsplash.png)";
+                    break;
+                case 1:
+                    splashScreen.style.backgroundImage = "url(asset/splashscreen/story.png)";
+                    break;
+                case 2:
+                    splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
+                    break;
+            }
         default:
             break;
     }
@@ -725,7 +742,7 @@ function startGame() {
                                         }
     }    
     addListeners();
-    fadeOut(splashScreen);
+    //fadeOut(splashScreen);
     if (playSound) themeMusic.fadeIn(0.1, fadeInTime);
 
     get("asset/levels/level" + currentLevel + ".json", function(req) {

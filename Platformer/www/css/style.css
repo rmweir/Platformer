@@ -31,7 +31,7 @@ canvas {
     margin: 0; padding: 0;
     background-image: url("../asset/splashscreen/introsplash.png");
     background-size: cover;
-    z-index: 100;
+    z-index: 1000;
 }
 
 
