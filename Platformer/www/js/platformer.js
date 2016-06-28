@@ -508,12 +508,13 @@ function fadeOut(element) {
     if (opacity <= 0.1){
         clearInterval(timer);
         element.style.display = 'none';
+        element.style.zIndex = 0;
     }
     element.style.opacity = opacity;
     element.style.filter = 'alpha(opacity ='+opacity*100+")";
        opacity-= opacity* 0.1;
     }, 50);
-    element.style.zIndex = 0;
+    
 }
 
 function setup(map) {
