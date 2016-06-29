@@ -260,8 +260,20 @@ function killPlayer(player) {
     player.dx = player.dy = 0;
     
     if (playerLives <= 0){
-        //send back to level 1
+	player.x = 1000;
+	player.y = 1000;
+	monsters = [],
+        treasure = [],
+        cTiles   = [],
+        bg1Tiles  = [],
+        bg2Tiles  = [],
+        bg3Tiles  = [];
+	playerLives = 6;
+        currentLevel = 1;
+	if (saveProg) localStorage.setItem('level',currentLevel.toString());
+	startGame();//send back to level 1
     }
+    
 }
 
 function playerOverlap(x, y, width, height){
