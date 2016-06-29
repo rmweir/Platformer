@@ -130,8 +130,16 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
     this.image.style.height = "100%";
     this.container.name = name;
     this.container.appendChild(this.image);   
-    document.getElementById('game_ui').appendChild(this.container);    
+    document.getElementById('game_ui').appendChild(this.container);
+    
+    this.update = function() {
+        this.container.style.width = this.width + "px";
+        this.container.style.height = this.height + "px";
+        this.container.style.left = this.x + "px";
+        this.container.style.top = this.y + "px";
+    }
 }
+
 
 // Create UI Elements
 var upBtn = new uiElement("up", w - w/10 - 10, h - w/10 - 10, w/10, w/10);
@@ -661,16 +669,34 @@ function touchHandler(e) {
     //console.log("touchevent! - " + id + "      " + type);
     switch (id){
         case 'right':
-            if(type == 'touchstart') onkey(e, KEY.RIGHT, true);
-            else if(type == 'touchend') onkey(e, KEY.RIGHT, false);	
+            if(type == 'touchstart') {
+                rightBtn.image.src = "asset/sprites/right_pressed.png";
+                onkey(e, KEY.RIGHT, true);
+            }
+            else if(type == 'touchend') {
+                rightBtn.image.src = "asset/sprites/right.png";
+                onkey(e, KEY.RIGHT, false);
+            }
             break;
         case 'left':
-            if(type == 'touchstart') onkey(e, KEY.LEFT, true);
-            else if(type == 'touchend') onkey(e, KEY.LEFT, false);	
+            if(type == 'touchstart') {
+                leftBtn.image.src = "asset/sprites/left_pressed.png";
+                onkey(e, KEY.LEFT, true);   
+            }
+            else if(type == 'touchend') {
+                leftBtn.image.src = "asset/sprites/left.png";
+                onkey(e, KEY.LEFT, false);
+            }
             break;
         case 'up':
-            if(type == 'touchstart') onkey(e, KEY.SPACE, true);
-            else if(type == 'touchend') onkey(e, KEY.SPACE, false);	
+            if(type == 'touchstart') {
+                upBtn.image.src = "asset/sprites/up_pressed.png";
+                onkey(e, KEY.SPACE, true);
+            }
+            else if(type == 'touchend'){
+                upBtn.image.src = "asset/sprites/up.png";
+                onkey(e, KEY.SPACE, false);	
+            }
             break;
         case 'sound':
             if(type == 'touchstart') {
