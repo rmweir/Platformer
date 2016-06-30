@@ -64,16 +64,6 @@ var playSound = true;
 
 var spritesheet = new Image();
 spritesheet.src = "asset/sprites/spritesheet_combined.png";
-
-/* old sprite locations
-var playerSprite = 112,
-    monsterSprite = 189,
-    treasureSprite = 440,
-    emptyTreasureSprite = 441,
-    heartSprite = 26,
-    halfHeartSprite = 27,
-    emptyHeartSprite = 28;
- */
     
 function animatedSprite(standing, right, left) {
     
@@ -125,7 +115,7 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
     this.container.style.zIndex = 5;
     
     this.image = document.createElement("IMG");
-    (this.image).src = "asset/sprites/" + name + ".png";
+    (this.image).src = "asset/ui/" + name + ".png";
     this.image.style.width = "100%";
     this.image.style.height = "100%";
     this.container.name = name;
@@ -153,9 +143,10 @@ var pauseBtn = new uiElement("pause", w/2 + 10, h - w/20 - 10, w/20, w/20);
 // 
 var currentMap;
 var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
-var screenState = (currentLevel == 1) ? 0 : 3;
-var playerLives = 6;
+var screenState = (currentLevel == 1) ? 1 : 3;
 var MAX_LIVES = 6;
+var playerLives = MAX_LIVES;
+var lastLevel = 8;
 
 var playerColBuff = 0;
 
@@ -220,10 +211,17 @@ function updatePlayer(dt) {
     
     
     // check goal and collected treasure
-    if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) 
-        && player.collected >= treasure.length) {
+    if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) && player.collected >= treasure.length) {
         console.log("GOAL REACHED!");
-        nextLevel();
+        if (currentLevel == lastLevel) {
+            splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
+            restartGame();
+            screenState = 3;
+            unfade(splashScreen);
+            
+        }
+        else
+            nextLevel();
     }
     updateEntity(player, dt);
 }
@@ -267,21 +265,22 @@ function killPlayer(player) {
     player.y = player.start.y;
     player.dx = player.dy = 0;
     
-    if (playerLives <= 0){
-	player.x = 1000;
+    if (playerLives <= 0) restartGame();
+}
+    
+function restartGame() {
+    player.x = 1000;
 	player.y = 1000;
 	monsters = [],
-        treasure = [],
-        cTiles   = [],
-        bg1Tiles  = [],
-        bg2Tiles  = [],
-        bg3Tiles  = [];
-	playerLives = 6;
-        currentLevel = 1;
+    treasure = [],
+    cTiles   = [],
+    bg1Tiles  = [],
+    bg2Tiles  = [],
+    bg3Tiles  = [];
+	playerLives = MAX_LIVES;
+    currentLevel = 1;
 	if (saveProg) localStorage.setItem('level',currentLevel.toString());
-	startGame();//send back to level 1
-    }
-    
+    startGame(); //send back to level 1
 }
 
 function playerOverlap(x, y, width, height){
@@ -403,6 +402,7 @@ function updateEntity(entity, dt) {
 
 function render(frame, dt) {
     ctx_dynamic.clearRect(0, 0, width, height);
+    
     renderTreasure(ctx_dynamic, frame);
     renderPlayer(ctx_dynamic, dt, frame);
     renderMonsters(ctx_dynamic, dt);
@@ -464,9 +464,6 @@ function renderScores(ctx){
     }
     if (playerLives % 2 != 0)
         drawSpriteScaled(halfHeartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
-
-
-
 }
 
 function renderMonsters(ctx, dt) {
@@ -533,8 +530,21 @@ function fadeOut(element) {
     element.style.opacity = opacity;
     element.style.filter = 'alpha(opacity ='+opacity*100+")";
        opacity-= opacity* 0.1;
-    }, 50);
+    }, 50);  
+}
     
+function unfade(element) {
+    element.style.zIndex = 1000;
+    var op = 0.1;  // initial opacity
+    element.style.display = 'block';
+    var timer = setInterval(function () {
+        if (op >= 1){
+            clearInterval(timer);
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op += op * 0.1;
+    }, 10);
 }
 
 function setup(map) {
@@ -661,40 +671,40 @@ function frame() {
     requestAnimationFrame(frame);
 }
 
-function touchHandler(e) {
+function uiHandler(e) {
     e.preventDefault();
     var type = e.type;
     var target = e.currentTarget;
     var id = target.id;
-    //console.log("touchevent! - " + id + "      " + type);
-    switch (id){
+    
+    switch (id) {
         case 'right':
             if(type == 'touchstart') {
-                rightBtn.image.src = "asset/sprites/right_pressed.png";
+                rightBtn.image.src = "asset/ui/right_pressed.png";
                 onkey(e, KEY.RIGHT, true);
             }
             else if(type == 'touchend') {
-                rightBtn.image.src = "asset/sprites/right.png";
+                rightBtn.image.src = "asset/ui/right.png";
                 onkey(e, KEY.RIGHT, false);
             }
             break;
         case 'left':
             if(type == 'touchstart') {
-                leftBtn.image.src = "asset/sprites/left_pressed.png";
+                leftBtn.image.src = "asset/ui/left_pressed.png";
                 onkey(e, KEY.LEFT, true);   
             }
             else if(type == 'touchend') {
-                leftBtn.image.src = "asset/sprites/left.png";
+                leftBtn.image.src = "asset/ui/left.png";
                 onkey(e, KEY.LEFT, false);
             }
             break;
         case 'up':
-            if(type == 'touchstart') {
-                upBtn.image.src = "asset/sprites/up_pressed.png";
+            if (type == 'touchstart') {
+                upBtn.image.src = "asset/ui/up_pressed.png";
                 onkey(e, KEY.SPACE, true);
             }
             else if(type == 'touchend'){
-                upBtn.image.src = "asset/sprites/up.png";
+                upBtn.image.src = "asset/ui/up.png";
                 onkey(e, KEY.SPACE, false);	
             }
             break;
@@ -703,10 +713,10 @@ function touchHandler(e) {
                 playSound = !playSound;
                 if(!playSound) {
                     themeMusic.fadeOut(0, fadeInTime);
-                    soundBtn.image.src = "asset/sprites/sound_off.png";
+                    soundBtn.image.src = "asset/ui/sound_off.png";
                 } else {
                     themeMusic.fadeIn(0.1, fadeInTime);
-                    soundBtn.image.src = "asset/sprites/sound.png";
+                    soundBtn.image.src = "asset/ui/sound.png";
                 }
             }
             break;
@@ -714,34 +724,42 @@ function touchHandler(e) {
             if(type == 'touchstart') {
                 gamePaused = !gamePaused;
                 if(!gamePaused) {
-                    pauseBtn.image.src = "asset/sprites/pause.png";
+                    pauseBtn.image.src = "asset/ui/pause.png";
                 } else {
-                    pauseBtn.image.src = "asset/sprites/play.png";
+                    pauseBtn.image.src = "asset/ui/play.png";
                 }
             }
             break;
-        case 'splashScreen':
-            screenState++;
-            console.log("screenState: " + screenState);
+    }
+}    
 
-            if(screenState >= 3) {
+function splashscreenHandler(e) {
+    e.preventDefault();
+    var type = e.type;
+    var target = e.currentTarget;
+    var id = target.id;    
+
+    if (type = "touchstart"){
+        console.log("screenState: " + screenState);
+        switch (screenState++) {
+            case 0:
+                splashScreen.style.backgroundImage = "url(asset/splashscreen/introsplash.png)";
+                break;
+            case 1:
+                splashScreen.style.backgroundImage = "url(asset/splashscreen/story.png)";
+                break;
+            case 2:
+                splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
+                break;
+            case 3:
                 fadeOut(splashScreen);
                 break;
-            }
-            
-            switch (screenState) {
-                case 0:
-                    splashScreen.style.backgroundImage = "url(asset/splashscreen/introsplash.png)";
-                    break;
-                case 1:
-                    splashScreen.style.backgroundImage = "url(asset/splashscreen/story.png)";
-                    break;
-                case 2:
-                    splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
-                    break;
-            }
-        default:
-            break;
+            case 4:
+                screenState = 3;
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -749,23 +767,23 @@ function addListeners() {
     document.addEventListener('keydown', function(ev) { return onkey(ev, ev.keyCode, true);  }, false);
     document.addEventListener('keyup',   function(ev) { return onkey(ev, ev.keyCode, false); }, false);
     
-    document.getElementById("right").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("right").addEventListener('touchend', touchHandler, false);
+    document.getElementById("right").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("right").addEventListener('touchend', uiHandler, false);
 
-    document.getElementById("left").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("left").addEventListener('touchend', touchHandler, false);
+    document.getElementById("left").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("left").addEventListener('touchend', uiHandler, false);
 
-    document.getElementById("up").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("up").addEventListener('touchend', touchHandler, false);
+    document.getElementById("up").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("up").addEventListener('touchend', uiHandler, false);
   
-    document.getElementById("sound").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("sound").addEventListener('touchend', touchHandler, false);
+    document.getElementById("sound").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("sound").addEventListener('touchend', uiHandler, false);
     
-    document.getElementById("pause").addEventListener('touchstart', touchHandler, false);
-    document.getElementById("pause").addEventListener('touchend', touchHandler, false);
+    document.getElementById("pause").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("pause").addEventListener('touchend', uiHandler, false);
     
-    splashScreen.addEventListener('touchStart', touchHandler, false);
-    splashScreen.addEventListener('touchend', touchHandler, false);
+    splashScreen.addEventListener('touchStart', splashscreenHandler, false);
+    splashScreen.addEventListener('touchend', splashscreenHandler, false);
 
 }
 
