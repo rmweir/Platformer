@@ -46,7 +46,7 @@ var themeMusic = new Howl({
 });
 var jumpSound = new Howl({
     urls: ['asset/sounds/jump.wav'],
-    volume: 0.01,
+    volume: 0.5,
 });
 var grunt = new Howl({
     urls: ['asset/sounds/grunt.mp3'],
@@ -54,7 +54,7 @@ var grunt = new Howl({
 });
 var beer = new Howl({
     urls: ['asset/sounds/beer.mp3'],
-    volume: 0.5,
+    volume: 0.2,
 });
 var fadeInTime = 1000; // in ms
 var playSound = true;
@@ -259,7 +259,7 @@ function killMonster(monster) {
 }
 
 function killPlayer(player) {
-    grunt.play();
+    //grunt.play();
     playerLives--;
     player.x = player.start.x;
     player.y = player.start.y;
