@@ -48,8 +48,8 @@ var jumpSound = new Howl({
     urls: ['asset/sounds/jump.wav'],
     volume: 0.1,
 });
-var grunt = new Howl({
-    urls: ['asset/sounds/grunt.mp3'],
+var ow = new Howl({
+    urls: ['asset/sounds/ow.mp3'],
     volume: 0.1,
 });
 var beer = new Howl({
@@ -262,7 +262,7 @@ function killMonster(monster) {
 }
 
 function killPlayer(player) {
-    if (playSound) grunt.play();
+    if (playSound) ow.play();
     playerLives--;
     player.x = player.start.x;
     player.y = player.start.y;
@@ -452,6 +452,7 @@ function renderScores(ctx){
     ctx.fillStyle = "white";
     ctx.font = "16px Arial";
     ctx.fillText("Lives:", t2p(x), t2p(y) - 5);
+    ctx.fillText("Level : " + currentLevel + "/" + lastLevel, t2p(x), t2p(y + 2));
     //Draw lives
     for(n = 0; n < Math.floor(MAX_LIVES / 2) ; n++){
         drawSpriteScaled(emptyHeartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
