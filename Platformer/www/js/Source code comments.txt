@@ -1,0 +1,96 @@
+//-------------------------------------------------------------------------
+// GAME CONSTANTS AND VARIABLES
+//-------------------------------------------------------------------------
+
+//First vars in all caps are constants
+//constants are mostly used for game physics
+
+//vars are then setup for players, objects, user interface, and game state
+
+
+//_______Sounds_________
+// 
+
+//vars for music setup
+
+
+//_______Sprites_________
+// 
+
+//spritesheet retrieved from folder
+
+//sprites set up for all game objects
+
+//
+//
+
+//_______UI Elements_________
+
+//splashScreen setup
+//user interface styled and setup
+
+
+
+//_______Other_________
+// 
+
+//helper functions created
+//featuers such as saving are created
+
+//-------------------------------------------------------------------------
+// UPDATE LOOP
+//-------------------------------------------------------------------------
+
+//checks and updates state of all game entities/objects
+// with update functions such as updatePlayer(dt)
+
+
+
+//-------------------------------------------------------------------------
+// RENDERING
+//-------------------------------------------------------------------------
+
+//map rendering handled
+//renders objects/entities initially
+//uses updated data for objects/entities and rerenders with functions
+// such as renderMap(ctx)
+
+
+//-------------------------------------------------------------------------
+// LOAD THE MAP
+//-------------------------------------------------------------------------
+
+//fadeout function created
+//setup for map utilizing tile types
+// and json file
+//sets up object/entity locations using json file
+
+//nextLevel() transitions level and updates localStorage
+
+//-------------------------------------------------------------------------
+// THE GAME LOOP
+//-------------------------------------------------------------------------
+
+//handles fram calculations with frame()
+//facilitates interactivity between user and ui with uiHandler(e)
+
+//splashscreenHandler(e) uses screen state to help manage which splashscreen
+// is to be displayed and what queues them
+
+//addListeners() add every listener used by the games, enabling pc
+// and mobile controls
+
+//startGame() utilizes functions such as addListeners() to initially setup
+// elements necessary for game play
+
+
+
+//-------------------------------------------------------------------------
+// UTILITIES
+//-------------------------------------------------------------------------
+
+//utility functions such as overlap(which checks for object/entity collision
+
+---------------------
+
+//startGame() is called which consequently fires off game loop
