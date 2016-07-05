@@ -149,7 +149,7 @@ var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
 var screenState = (currentLevel == 1) ? 1 : 3;
 var MAX_LIVES = 6;
 var playerLives = MAX_LIVES;
-var lastLevel = 9;
+var lastLevel = 10;
 
 var playerColBuff = 0;
 
