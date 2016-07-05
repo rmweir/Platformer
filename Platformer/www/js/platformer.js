@@ -46,15 +46,15 @@ var themeMusic = new Howl({
 });
 var jumpSound = new Howl({
     urls: ['asset/sounds/jump.wav'],
-    volume: 0.5,
+    volume: 0.1,
 });
-var grunt = new Howl({
-    urls: ['asset/sounds/grunt.mp3'],
-    volume: 0.5,
+var ow = new Howl({
+    urls: ['asset/sounds/ow.mp3'],
+    volume: 0.1,
 });
 var beer = new Howl({
     urls: ['asset/sounds/beer.mp3'],
-    volume: 0.2,
+    volume: 0.1,
 });
 var fadeInTime = 1000; // in ms
 var playSound = true;
@@ -130,13 +130,16 @@ function uiElement(name, x, y, width, height){ //maybe add onpress function, nam
     }
 }
 
-
+var size = h * .23;
+var optSize = w/20;
+var padding = 4;
 // Create UI Elements
-var upBtn = new uiElement("up", w - w/10 - 10, h - w/10 - 10, w/10, w/10);
-var leftBtn = new uiElement("left", 10, h - w/10 - 10, w/10, w/10);
-var rightBtn = new uiElement("right", 10 + w/10 + w/20, h - w/10 - 10, w/10, w/10);
-var soundBtn = new uiElement("sound", w/2 - w/20 - 10, h - w/20 - 10, w/20, w/20);
-var pauseBtn = new uiElement("pause", w/2 + 10, h - w/20 - 10, w/20, w/20);
+var upBtn = new uiElement("up", w - size - padding, h - size - padding, size, size);
+var leftBtn = new uiElement("left", padding, h - size - padding, size, size);
+var rightBtn = new uiElement("right", 3 * padding + size, h - size - padding, size, size);
+    
+var soundBtn = new uiElement("sound", w/2 - optSize - padding, h - optSize - padding, optSize, optSize);
+var pauseBtn = new uiElement("pause", w/2 + padding, h - optSize - padding, optSize, optSize);
 
 
 //_______Other_________
@@ -146,7 +149,7 @@ var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
 var screenState = (currentLevel == 1) ? 1 : 3;
 var MAX_LIVES = 6;
 var playerLives = MAX_LIVES;
-var lastLevel = 8;
+var lastLevel = 10;
 
 var playerColBuff = 0;
 
@@ -214,7 +217,7 @@ function updatePlayer(dt) {
     if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) && player.collected >= treasure.length) {
         console.log("GOAL REACHED!");
         if (currentLevel == lastLevel) {
-            splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
+            splashScreen.style.backgroundImage = "url(asset/splashscreen/win.gif)";
             restartGame();
             screenState = 3;
             unfade(splashScreen);
@@ -259,7 +262,7 @@ function killMonster(monster) {
 }
 
 function killPlayer(player) {
-    //grunt.play();
+    if (playSound) ow.play();
     playerLives--;
     player.x = player.start.x;
     player.y = player.start.y;
@@ -288,7 +291,7 @@ function playerOverlap(x, y, width, height){
 }
 
 function collectTreasure(t) {
-    beer.play();
+    if (playSound) beer.play();
     player.collected++;
     t.collected = true;
 }
@@ -443,18 +446,13 @@ function renderScores(ctx){
 
     var scale = .75;
     var size = TILE * scale;
-
-    // Draw collected treasure
-    for(n = 0, max = player.collected ; n < treasure.length ; n++){
-        if(n < max)
-            drawSpriteScaled(treasureSprite, t2p(x) + n * size, t2p(y + 2), size, size, ctx);
-        else
-            drawSpriteScaled(emptyTreasureSprite, t2p(x) + n * size, t2p(y + 2), size, size, ctx);
-    }
-    // Draw slain monsters
-    for(n = 0, max = player.killed ; n < max ; n++)
-        drawSpriteScaled(monsterSprite, t2p(x) + n * size, t2p(y + 1), size, size, ctx); 
-
+    x = 24
+    
+    x = MAP.tw / 2 - 5, y = MAP.th - 3;
+    ctx.fillStyle = "white";
+    ctx.font = "16px Arial";
+    ctx.fillText("Lives:", t2p(x), t2p(y) - 5);
+    ctx.fillText("Level : " + currentLevel + "/" + lastLevel, t2p(x), t2p(y + 2));
     //Draw lives
     for(n = 0; n < Math.floor(MAX_LIVES / 2) ; n++){
         drawSpriteScaled(emptyHeartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
@@ -464,6 +462,26 @@ function renderScores(ctx){
     }
     if (playerLives % 2 != 0)
         drawSpriteScaled(halfHeartSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
+    
+    x = MAP.tw /2 + 2; 
+    // Draw collected treasure
+    for(n = 0, max = player.collected ; n < treasure.length ; n++){
+        if(n < max)
+            drawSpriteScaled(treasureSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
+        else
+            drawSpriteScaled(emptyTreasureSprite, t2p(x) + n * size, t2p(y), size, size, ctx);
+    }
+    // Draw slain monsters
+    y = MAP.th - 2;
+    i = 0;
+    for(n = 0, max = player.killed ; n < max ; n++, i++) {
+        if (n != 0 && n % 8 == 0) {
+            i = 0;
+            y++;
+        }
+        drawSpriteScaled(monsterSprite, t2p(x) + i * size, t2p(y), size, size, ctx); 
+    }
+    
 }
 
 function renderMonsters(ctx, dt) {
