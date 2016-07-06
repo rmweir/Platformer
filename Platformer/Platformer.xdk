@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1467565160880,
+      "lastModifiedDate": 1467824980417,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -227,10 +227,10 @@
           "android-installLocation": "auto",
           "Orientation": "landscape",
           "android-signed": true,
-          "Fullscreen": false
+          "Fullscreen": true
         },
         "isActive_": true,
-        "appName_": "Platformer",
+        "appName_": "HotDateDash",
         "appID_": "xdk.intel.blank.game.template",
         "appAccess_": {
           "mode": "legacy",
@@ -239,7 +239,32 @@
           "navigation": [],
           "properties": {}
         },
-        "icons_": [],
+        "icons_": [
+          {
+            "relPath": "asset/sprites/icon36.png",
+            "density": "ldpi",
+            "height": 36,
+            "width": 36
+          },
+          {
+            "relPath": "asset/sprites/icon48.png",
+            "density": "mdpi",
+            "height": 48,
+            "width": 48
+          },
+          {
+            "relPath": "asset/sprites/icon72.png",
+            "density": "hdpi",
+            "height": 72,
+            "width": 72
+          },
+          {
+            "relPath": "asset/sprites/icon96.png",
+            "density": "xhdpi",
+            "height": 96,
+            "width": 96
+          }
+        ],
         "splashes_": [],
         "addlPermissions_": "",
         "excludedLibraries_": "",
@@ -248,7 +273,7 @@
         "cordovaCLIVersion_": "5.4.1",
         "crosswalkVersion_": "16",
         "appVersion_": "0.0.1",
-        "appDescription_": "A game.",
+        "appDescription_": "Fun platformer game.",
         "appAuthor_": "230 crew",
         "appVersionCode_": "1"
       }
