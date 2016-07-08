@@ -4,10 +4,14 @@
 <!--To change the contents of this file, see the documentation on the intelxdk.config.additions.xml file.-->
 <intelxdk:version value="1.0"/>
 <intelxdk:cordova-cli version="5.4.1"/>
-<name>Platformer</name>
-<description>A game.</description>
+<name>HotDateDash</name>
+<description>Fun platformer game.</description>
 <author>230 crew</author>
 <content src="index.html"/>
+<icon platform="android" src="asset/sprites/icon36.png" density="ldpi" width="36" height="36"/>
+<icon platform="android" src="asset/sprites/icon48.png" density="mdpi" width="48" height="48"/>
+<icon platform="android" src="asset/sprites/icon72.png" density="hdpi" width="72" height="72"/>
+<icon platform="android" src="asset/sprites/icon96.png" density="xhdpi" width="96" height="96"/>
 <intelxdk:plugin intelxdk:name="Cordova Legacy Whitelist Plugin (added by Intel XDK)" intelxdk:value="cordova-plugin-legacy-whitelist" intelxdk:version="1.1.1"/>
 <preference name="android-minSdkVersion" value="14"/>
 <preference name="android-targetSdkVersion" value="21"/>
@@ -15,7 +19,7 @@
 <platform name="android">
 <preference name="Orientation" value="landscape"/></platform>
 <preference name="android-signed" value="true"/>
-<preference name="Fullscreen" value="false"/>
+<preference name="Fullscreen" value="true"/>
 <intelxdk:crosswalk version="16"/>
 <!--creationInfo:{"src":"webapp/template-blank-game-landscape-webapp/sample.zip","projectTypeName":"com.intel.xdk.projecttype.jsapp"}-->
 <preference name="debuggable" value="false"/>
