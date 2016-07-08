@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1467397267183,
+      "lastModifiedDate": 1467605067015,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -100,7 +100,7 @@
         "runtime_": "W3C",
         "name_": "WebApp",
         "preferences_": {},
-        "isActive_": false,
+        "isActive_": true,
         "appName_": "Platformer",
         "appID_": "xdk.intel.blank.game.template",
         "appAccess_": {
@@ -150,7 +150,7 @@
         "runtime_": "W3C on Chrome OS",
         "name_": "Chrome",
         "preferences_": {},
-        "isActive_": false,
+        "isActive_": true,
         "appName_": "Platformer",
         "appID_": "xdk.intel.blank.game.template",
         "appAccess_": {
