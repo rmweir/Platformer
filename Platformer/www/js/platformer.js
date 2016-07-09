@@ -32,7 +32,7 @@ var fps      = 60,
     bg2Tiles = [], 
     bg3Tiles = [];
 var gamePaused = false;
-var saveProg = false;
+var saveProg = true;
 
 
 //_______Sounds_________
