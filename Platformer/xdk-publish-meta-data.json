@@ -1,14 +1,22 @@
 {
-  "categorization": {},
+  "categorization": {
+    "type": "GAME",
+    "category": "Adventure"
+  },
   "description": {
     "texts": {
-      "title": "",
+      "title": "Hot Date Dash",
       "features": [
-        ""
+        "Fully touch enabled!",
+        "Multiple Levels!",
+        "Horribly cute and repetitive soundtrack!",
+        "Levels automatically save!",
+        "Pausing!",
+        "Enable/Disable sound!"
       ],
-      "short-description": "",
-      "full-description": "",
-      "keywords": "",
+      "short-description": "Make it to your date unscathed, and a little tipsy!",
+      "full-description": "You're a nerd. You're allergic to bees. You managed to land a date! You need to traverse through the city to pick her up. Be sure to \"loosen\" up before you get there.",
+      "keywords": "platformer, oldschool, arcade, adventure, date, dash, hot, nerd, bees, city, fun, bored, hard, difficult, cute, cheery, cheerful, colorful",
       "recent-changes": "",
       "privacy-policy": "",
       "eula": ""
@@ -24,6 +32,15 @@
       "video-url": ""
     }
   },
-  "packages": {},
-  "support": {}
+  "packages": {
+    "apk-file": "",
+    "zip-xdk-compliant": false,
+    "zip-file": "",
+    "secondary-apk-file": ""
+  },
+  "support": {
+    "email": "RMWDev@gmail.com",
+    "website": ""
+  },
+  "testing-instructions": ""
 }
