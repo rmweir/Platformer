@@ -757,7 +757,7 @@ function splashscreenHandler(e) {
     var target = e.currentTarget;
     var id = target.id;    
 
-    if (type = "touchstart"){
+    if (type == "touchstart" || type == "mousedown"){
         console.log("screenState: " + screenState);
         switch (screenState++) {
             case 0:
@@ -802,6 +802,9 @@ function addListeners() {
     
     splashScreen.addEventListener('touchStart', splashscreenHandler, false);
     splashScreen.addEventListener('touchend', splashscreenHandler, false);
+    splashScreen.addEventListener('mousedown', splashscreenHandler, false);
+    splashScreen.addEventListener('mouseup', splashscreenHandler, false);
+    
 
 }
 

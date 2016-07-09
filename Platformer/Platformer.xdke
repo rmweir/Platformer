@@ -11,7 +11,7 @@
   },
   "build-tab": {
     "selectedTargets": [
-      "CORDOVA_ANDROID"
+      "WEB_CHROME"
     ]
   }
 }
