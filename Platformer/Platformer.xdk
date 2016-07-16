@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1468037414761,
+      "lastModifiedDate": 1468607256580,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -42,7 +42,7 @@
           "Orientation": "landscape",
           "deployment-target": "8.0"
         },
-        "isActive_": true,
+        "isActive_": false,
         "appName_": "Platformer",
         "appID_": "xdk.intel.blank.game.template",
         "appAccess_": {
@@ -73,7 +73,7 @@
           "windows-publisher-id": "",
           "Orientation": "landscape"
         },
-        "isActive_": true,
+        "isActive_": false,
         "appName_": "Platformer",
         "appID_": "xdk.intel.blank.game.template",
         "appAccess_": {
@@ -230,16 +230,41 @@
           "Fullscreen": false
         },
         "isActive_": true,
-        "appName_": "Platformer",
-        "appID_": "xdk.intel.blank.game.template",
+        "appName_": "Hot Date Dash",
+        "appID_": "com.hotdatedash",
         "appAccess_": {
-          "mode": "legacy",
+          "mode": "whitelist",
           "network": [],
           "intents": [],
           "navigation": [],
           "properties": {}
         },
-        "icons_": [],
+        "icons_": [
+          {
+            "relPath": "asset/icons/icon96.png",
+            "density": "xhdpi",
+            "height": 96,
+            "width": 96
+          },
+          {
+            "relPath": "asset/icons/icon72.png",
+            "density": "hdpi",
+            "height": 72,
+            "width": 72
+          },
+          {
+            "relPath": "asset/icons/icon48.png",
+            "density": "mdpi",
+            "height": 48,
+            "width": 48
+          },
+          {
+            "relPath": "asset/icons/icon36.png",
+            "density": "ldpi",
+            "height": 36,
+            "width": 36
+          }
+        ],
         "splashes_": [],
         "addlPermissions_": "",
         "excludedLibraries_": "",
@@ -248,8 +273,8 @@
         "cordovaCLIVersion_": "5.4.1",
         "crosswalkVersion_": "16",
         "appVersion_": "0.0.1",
-        "appDescription_": "A game.",
-        "appAuthor_": "230 crew",
+        "appDescription_": "Platformor",
+        "appAuthor_": "Ricardo Weir, India Sohal, Bradley Rosenlof",
         "appVersionCode_": "1"
       }
     },

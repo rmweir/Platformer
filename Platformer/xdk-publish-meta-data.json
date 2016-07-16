@@ -22,9 +22,13 @@
       "eula": ""
     },
     "images": {
-      "screenshots": [],
-      "app-icon-small": "",
-      "app-icon": "",
+      "screenshots": [
+        "../../../Desktop/ss1.jpg",
+        "../../../Desktop/ss2.jpg",
+        "../../../Desktop/ss3.jpg"
+      ],
+      "app-icon-small": "www/asset/icons/icon114.png",
+      "app-icon": "www/asset/icons/icon512.png",
       "small-promo": "",
       "large-promo": ""
     },
@@ -33,10 +37,10 @@
     }
   },
   "packages": {
-    "apk-file": "",
-    "zip-xdk-compliant": false,
-    "zip-file": "",
-    "secondary-apk-file": ""
+    "apk-file": "../../../Desktop/r/cordova_project-x86.android.20160715045534.apk",
+    "zip-xdk-compliant": true,
+    "zip-file": "../../../Desktop/r/platformer.cordova.crosswalk.201607155357.zip",
+    "secondary-apk-file": "../../../Desktop/r/cordova_project-armv7.android.20160715045546.apk"
   },
   "support": {
     "email": "RMWDev@gmail.com",
