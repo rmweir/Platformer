@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1468910207589,
+      "lastModifiedDate": 1468918250939,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -227,11 +227,11 @@
           "android-installLocation": "auto",
           "Orientation": "landscape",
           "android-signed": true,
-          "Fullscreen": false
+          "Fullscreen": true
         },
         "isActive_": true,
-        "appName_": "Platformer",
-        "appID_": "xdk.intel.blank.game.template",
+        "appName_": "Hot Date Dash",
+        "appID_": "com.hotdatedash",
         "appAccess_": {
           "mode": "legacy",
           "network": [],
@@ -239,18 +239,51 @@
           "navigation": [],
           "properties": {}
         },
-        "icons_": [],
-        "splashes_": [],
+        "icons_": [
+          {
+            "relPath": "asset/icons/icon36.png",
+            "density": "ldpi",
+            "height": 36,
+            "width": 36
+          },
+          {
+            "relPath": "asset/icons/icon48.png",
+            "density": "mdpi",
+            "height": 48,
+            "width": 48
+          },
+          {
+            "relPath": "asset/icons/icon72.png",
+            "density": "hdpi",
+            "height": 72,
+            "width": 72
+          },
+          {
+            "relPath": "asset/icons/icon96.png",
+            "density": "xhdpi",
+            "height": 96,
+            "width": 96
+          }
+        ],
+        "splashes_": [
+          {
+            "relPath": "asset/icons/splash.png",
+            "density": "hdpi",
+            "height": 480,
+            "width": 640,
+            "orientation": "landscape"
+          }
+        ],
         "addlPermissions_": "",
         "excludedLibraries_": "",
-        "certificateId_": "",
+        "certificateId_": "HK6AtDFo70-0msPx4zVJvA2",
         "iosProvs_": [],
         "cordovaCLIVersion_": "5.4.1",
         "crosswalkVersion_": "16",
-        "appVersion_": "0.0.1",
-        "appDescription_": "A game.",
-        "appAuthor_": "230 crew",
-        "appVersionCode_": "1"
+        "appVersion_": "0.0.3",
+        "appDescription_": "Fun platformer",
+        "appAuthor_": "Ricardo Weir, India Sohal, Bradley Rosenlof ",
+        "appVersionCode_": "4"
       }
     },
     "gameAssetDirectory": "asset",
