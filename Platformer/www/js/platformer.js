@@ -32,7 +32,7 @@ var fps      = 60,
     bg2Tiles = [], 
     bg3Tiles = [];
 var gamePaused = false;
-var saveProg = true;
+var saveProg = false;
 
 
 //_______Sounds_________
@@ -64,10 +64,6 @@ var playSound = true;
 
 var spritesheet = new Image();
 spritesheet.src = "asset/sprites/spritesheet_combined.png";
-    
-function animatedSprite(standing, right, left) {
-    
-}
 
 // Starting sprites
 
@@ -80,7 +76,6 @@ var monsterRight = [1467, 1468],
     monsterLeft = [1504, 1505],
     monsterDead = 1469;
 
-    
 var playerSprite = playerCenter,
     monsterSprite = monsterRight[0],
     treasureSprite = 1214,
@@ -92,7 +87,6 @@ var playerSprite = playerCenter,
 
 //_______UI Elements_________
 
-var splashScreen = document.getElementById("splashScreen");     
     
 var w = ui_container.width = window.innerWidth;
 var h = ui_container.height = window.innerHeight;
@@ -140,6 +134,8 @@ var rightBtn = new uiElement("right", 3 * padding + size, h - size - padding, si
     
 var soundBtn = new uiElement("sound", w/2 - optSize - padding, h - optSize - padding, optSize, optSize);
 var pauseBtn = new uiElement("pause", w/2 + padding, h - optSize - padding, optSize, optSize);
+    
+var splashscreen = new uiElement("splashscreen", 0, 0, w, h);
 
 
 //_______Other_________
@@ -217,10 +213,10 @@ function updatePlayer(dt) {
     if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) && player.collected >= treasure.length) {
         console.log("GOAL REACHED!");
         if (currentLevel == lastLevel) {
-            splashScreen.style.backgroundImage = "url(asset/splashscreen/win.gif)";
+            splashscreen.image.src = "url(asset/splashscreen/win.gif)";
             restartGame();
             screenState = 3;
-            unfade(splashScreen);
+            unfade(splashscreen.container);
             
         }
         else
@@ -748,36 +744,32 @@ function uiHandler(e) {
                 }
             }
             break;
+        case 'splashscreen':
+            if (type == "touchstart" || type == "mousedown") splashscreenHandler(e);
+            break;
     }
 }    
 
 function splashscreenHandler(e) {
-    e.preventDefault();
-    var type = e.type;
-    var target = e.currentTarget;
-    var id = target.id;    
-
-    if (type == "touchstart" || type == "mousedown"){
-        console.log("screenState: " + screenState);
-        switch (screenState++) {
-            case 0:
-                splashScreen.style.backgroundImage = "url(asset/splashscreen/introsplash.png)";
-                break;
-            case 1:
-                splashScreen.style.backgroundImage = "url(asset/splashscreen/story.png)";
-                break;
-            case 2:
-                splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
-                break;
-            case 3:
-                fadeOut(splashScreen);
-                break;
-            case 4:
-                screenState = 3;
-                break;
-            default:
-                break;
-        }
+    console.log("screenState: " + screenState);
+    switch (screenState++) {
+        case 0:
+            splashscreen.image.src = "asset/splashscreen/introsplash.png";
+            break;
+        case 1:
+            splashscreen.image.src = "asset/splashscreen/story.png";
+            break;
+        case 2:
+            splashscreen.image.src = "asset/splashscreen/howtoplay.png";
+            break;
+        case 3:
+            fadeOut(splashscreen.container);
+            break;
+        case 4:
+            screenState = 3;
+            break;
+        default:
+            break;
     }
 }
 
@@ -800,12 +792,11 @@ function addListeners() {
     document.getElementById("pause").addEventListener('touchstart', uiHandler, false);
     document.getElementById("pause").addEventListener('touchend', uiHandler, false);
     
-    splashScreen.addEventListener('touchStart', splashscreenHandler, false);
-    splashScreen.addEventListener('touchend', splashscreenHandler, false);
-    splashScreen.addEventListener('mousedown', splashscreenHandler, false);
-    splashScreen.addEventListener('mouseup', splashscreenHandler, false);
-    
+    document.getElementById("splashscreen").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("splashscreen").addEventListener('mousedown', uiHandler, false);
 
+    document.getElementById("splashscreen").addEventListener('touchend', uiHandler, false);
+    document.getElementById("splashscreen").addEventListener('mouseup', uiHandler, false);
 }
 
 function startGame() {
@@ -819,10 +810,10 @@ function startGame() {
                                             window.setTimeout(callback, 1000 / 60);
                                         }
     }    
+    
     addListeners();
-    //fadeOut(splashScreen);
     if (playSound) themeMusic.fadeIn(0.1, fadeInTime);
-
+    
     get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
         ctx_static.clearRect(0, 0, width, height);
@@ -834,6 +825,10 @@ function startGame() {
 //-------------------------------------------------------------------------
 // UTILITIES
 //-------------------------------------------------------------------------
+    
+function saveGameState() {
+    
+}
 
 function timestamp() {
     return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
