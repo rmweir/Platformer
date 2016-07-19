@@ -64,10 +64,6 @@ var playSound = true;
 
 var spritesheet = new Image();
 spritesheet.src = "asset/sprites/spritesheet_combined.png";
-    
-function animatedSprite(standing, right, left) {
-    
-}
 
 // Starting sprites
 
@@ -80,7 +76,6 @@ var monsterRight = [1467, 1468],
     monsterLeft = [1504, 1505],
     monsterDead = 1469;
 
-    
 var playerSprite = playerCenter,
     monsterSprite = monsterRight[0],
     treasureSprite = 1214,
@@ -92,7 +87,6 @@ var playerSprite = playerCenter,
 
 //_______UI Elements_________
 
-var splashScreen = document.getElementById("splashScreen");     
     
 var w = ui_container.width = window.innerWidth;
 var h = ui_container.height = window.innerHeight;
@@ -140,13 +134,18 @@ var rightBtn = new uiElement("right", 3 * padding + size, h - size - padding, si
     
 var soundBtn = new uiElement("sound", w/2 - optSize - padding, h - optSize - padding, optSize, optSize);
 var pauseBtn = new uiElement("pause", w/2 + padding, h - optSize - padding, optSize, optSize);
+var restartBtn = new uiElement("restart", padding, padding, optSize, optSize);
+
+
+    
+var splashscreen = new uiElement("splashscreen", 0, 0, w, h);
 
 
 //_______Other_________
 // 
 var currentMap;
-var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
-var screenState = (currentLevel == 1) ? 1 : 3;
+var currentLevel;
+var screenState;
 var MAX_LIVES = 6;
 var playerLives = MAX_LIVES;
 var lastLevel = 10;
@@ -217,10 +216,10 @@ function updatePlayer(dt) {
     if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) && player.collected >= treasure.length) {
         console.log("GOAL REACHED!");
         if (currentLevel == lastLevel) {
-            splashScreen.style.backgroundImage = "url(asset/splashscreen/win.gif)";
+            splashscreen.image.src = "asset/splashscreen/win.gif";
             restartGame();
             screenState = 3;
-            unfade(splashScreen);
+            unfade(splashscreen.container);
             
         }
         else
@@ -267,7 +266,7 @@ function killPlayer(player) {
     player.x = player.start.x;
     player.y = player.start.y;
     player.dx = player.dy = 0;
-    
+    saveGameState();
     if (playerLives <= 0) restartGame();
 }
     
@@ -282,7 +281,7 @@ function restartGame() {
     bg3Tiles  = [];
 	playerLives = MAX_LIVES;
     currentLevel = 1;
-	if (saveProg) localStorage.setItem('level',currentLevel.toString());
+    if (saveProg) saveGameState();
     startGame(); //send back to level 1
 }
 
@@ -566,11 +565,10 @@ function unfade(element) {
 }
 
 function setup(map) {
-    console.log("setting up map " + currentLevel);
+    console.log("Loading map: " + currentLevel);
     var objects, n, obj, entity;
 
     currentMap = map;
-    console.log(map.width + "    " + map.height);
     MAP.tw = map.width;
     MAP.th = map.height;
     TILE = map.tileheight;
@@ -639,7 +637,6 @@ function setupEntity(obj) {
     entity.start    = { x: obj.x, y: obj.y }
     entity.killed   = entity.collected = 0;
     entity.frame    = 0;
-    console.log("loaded entity");
     return entity;
 }
 
@@ -654,7 +651,7 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
-    if (saveProg) localStorage.setItem('level',currentLevel.toString());
+    if (saveProg) saveGameState();
     
     get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
@@ -729,6 +726,7 @@ function uiHandler(e) {
         case 'sound':
             if(type == 'touchstart') {
                 playSound = !playSound;
+                saveGameState();
                 if(!playSound) {
                     themeMusic.fadeOut(0, fadeInTime);
                     soundBtn.image.src = "asset/ui/sound_off.png";
@@ -748,36 +746,37 @@ function uiHandler(e) {
                 }
             }
             break;
+        case 'restart':
+            if(type == 'touchstart') {
+                restartGame();
+            }
+            break;
+        case 'splashscreen':
+            if (type == "touchstart" || type == "mousedown") splashscreenHandler(e);
+            break;
     }
 }    
 
 function splashscreenHandler(e) {
-    e.preventDefault();
-    var type = e.type;
-    var target = e.currentTarget;
-    var id = target.id;    
-
-    if (type == "touchstart" || type == "mousedown"){
-        console.log("screenState: " + screenState);
-        switch (screenState++) {
-            case 0:
-                splashScreen.style.backgroundImage = "url(asset/splashscreen/introsplash.png)";
-                break;
-            case 1:
-                splashScreen.style.backgroundImage = "url(asset/splashscreen/story.png)";
-                break;
-            case 2:
-                splashScreen.style.backgroundImage = "url(asset/splashscreen/howtoplay.png)";
-                break;
-            case 3:
-                fadeOut(splashScreen);
-                break;
-            case 4:
-                screenState = 3;
-                break;
-            default:
-                break;
-        }
+    console.log("screenState: " + screenState);
+    switch (screenState++) {
+        case 0:
+            splashscreen.image.src = "asset/splashscreen/introsplash.png";
+            break;
+        case 1:
+            splashscreen.image.src = "asset/splashscreen/story.png";
+            break;
+        case 2:
+            splashscreen.image.src = "asset/splashscreen/howtoplay.png";
+            break;
+        case 3:
+            fadeOut(splashscreen.container);
+            break;
+        case 4:
+            screenState = 3;
+            break;
+        default:
+            break;
     }
 }
 
@@ -800,12 +799,14 @@ function addListeners() {
     document.getElementById("pause").addEventListener('touchstart', uiHandler, false);
     document.getElementById("pause").addEventListener('touchend', uiHandler, false);
     
-    splashScreen.addEventListener('touchStart', splashscreenHandler, false);
-    splashScreen.addEventListener('touchend', splashscreenHandler, false);
-    splashScreen.addEventListener('mousedown', splashscreenHandler, false);
-    splashScreen.addEventListener('mouseup', splashscreenHandler, false);
+    document.getElementById("restart").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("restart").addEventListener('touchend', uiHandler, false);
     
+    document.getElementById("splashscreen").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("splashscreen").addEventListener('mousedown', uiHandler, false);
 
+    document.getElementById("splashscreen").addEventListener('touchend', uiHandler, false);
+    document.getElementById("splashscreen").addEventListener('mouseup', uiHandler, false);
 }
 
 function startGame() {
@@ -819,10 +820,14 @@ function startGame() {
                                             window.setTimeout(callback, 1000 / 60);
                                         }
     }    
+    
+    if (saveProg) loadGameState();
+    screenState = (currentLevel == 1) ? 1 : 3;
+    
     addListeners();
-    //fadeOut(splashScreen);
+    
     if (playSound) themeMusic.fadeIn(0.1, fadeInTime);
-
+    
     get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
         ctx_static.clearRect(0, 0, width, height);
@@ -834,6 +839,34 @@ function startGame() {
 //-------------------------------------------------------------------------
 // UTILITIES
 //-------------------------------------------------------------------------
+    
+function saveGameState() {
+    localStorage.setItem('level', currentLevel.toString());
+    localStorage.setItem('lives', playerLives.toString());
+    
+    if (playSound)
+        localStorage.setItem('playSound', "true");
+    else 
+        localStorage.setItem('playSound', "false");
+    console.log("state saved");
+}
+
+function loadGameState() {
+    // ensure value exists
+    if((localStorage.getItem('level') === null) || (localStorage.getItem('level') == '11'))
+        localStorage.setItem('level', '1');
+    if(localStorage.getItem('lives') === null)
+        localStorage.setItem('lives', MAX_LIVES.toString());
+    if(localStorage.getItem('playSound') === null)
+        localStorage.setItem('playSound', "true");
+    
+    currentLevel = parseInt(localStorage.getItem('level'));
+    playerLives = parseInt(localStorage.getItem('lives'));
+    playSound = localStorage.getItem('playSound') == "true" ? true : false;
+    
+    if(!playSound) soundBtn.image.src = "asset/ui/sound_off.png";
+    console.log("state loaded");
+}
 
 function timestamp() {
     return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();

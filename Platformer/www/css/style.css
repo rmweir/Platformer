@@ -24,18 +24,6 @@ canvas {
     z-index: 3;
 }
 
-#splashScreen {
-    position:absolute;
-    width:100%;
-    height:100%;
-    margin: 0; padding: 0;
-    background-image: url("../asset/splashscreen/introsplash.png");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    z-index: 1000;
-}
-
-
 
 @-ms-viewport { width: 100vw ; zoom: 100% ; }                           
 @viewport { width: 100vw ; zoom: 100% ; }

@@ -5,7 +5,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
-      "lastModifiedDate": 1468037414761,
+      "lastModifiedDate": 1468910207589,
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -243,7 +243,7 @@
         "splashes_": [],
         "addlPermissions_": "",
         "excludedLibraries_": "",
-        "certificateId_": "LuVZDwiiSUSxR7piuxtwCQ2",
+        "certificateId_": "",
         "iosProvs_": [],
         "cordovaCLIVersion_": "5.4.1",
         "crosswalkVersion_": "16",
