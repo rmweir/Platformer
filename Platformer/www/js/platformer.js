@@ -134,6 +134,9 @@ var rightBtn = new uiElement("right", 3 * padding + size, h - size - padding, si
     
 var soundBtn = new uiElement("sound", w/2 - optSize - padding, h - optSize - padding, optSize, optSize);
 var pauseBtn = new uiElement("pause", w/2 + padding, h - optSize - padding, optSize, optSize);
+var restartBtn = new uiElement("restart", padding, padding, optSize, optSize);
+
+
     
 var splashscreen = new uiElement("splashscreen", 0, 0, w, h);
 
@@ -149,7 +152,7 @@ var lastLevel = 10;
 
 var playerColBuff = 0;
 
-var showFPS = true;
+var showFPS = false;
 
 var t2p      = function(t)     { return t*TILE;                     },
     p2t      = function(p)     { return Math.floor(p/TILE);         };
@@ -213,7 +216,7 @@ function updatePlayer(dt) {
     if (overlap(player.x, player.y, TILE, TILE, currentMap.properties.goalTx * TILE, currentMap.properties.goalTy * TILE, TILE, TILE) && player.collected >= treasure.length) {
         console.log("GOAL REACHED!");
         if (currentLevel == lastLevel) {
-            splashscreen.image.src = "url(asset/splashscreen/win.gif)";
+            splashscreen.image.src = "asset/splashscreen/win.gif";
             restartGame();
             screenState = 3;
             unfade(splashscreen.container);
@@ -743,6 +746,11 @@ function uiHandler(e) {
                 }
             }
             break;
+        case 'restart':
+            if(type == 'touchstart') {
+                restartGame();
+            }
+            break;
         case 'splashscreen':
             if (type == "touchstart" || type == "mousedown") splashscreenHandler(e);
             break;
@@ -790,6 +798,9 @@ function addListeners() {
     
     document.getElementById("pause").addEventListener('touchstart', uiHandler, false);
     document.getElementById("pause").addEventListener('touchend', uiHandler, false);
+    
+    document.getElementById("restart").addEventListener('touchstart', uiHandler, false);
+    document.getElementById("restart").addEventListener('touchend', uiHandler, false);
     
     document.getElementById("splashscreen").addEventListener('touchstart', uiHandler, false);
     document.getElementById("splashscreen").addEventListener('mousedown', uiHandler, false);
