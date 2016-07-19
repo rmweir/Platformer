@@ -32,7 +32,7 @@ var fps      = 60,
     bg2Tiles = [], 
     bg3Tiles = [];
 var gamePaused = false;
-var saveProg = false;
+var saveProg = true;
 
 
 //_______Sounds_________
@@ -141,15 +141,15 @@ var splashscreen = new uiElement("splashscreen", 0, 0, w, h);
 //_______Other_________
 // 
 var currentMap;
-var currentLevel = saveProg ? parseInt(localStorage.getItem('level')) : 1;
-var screenState = (currentLevel == 1) ? 1 : 3;
+var currentLevel;
+var screenState;
 var MAX_LIVES = 6;
 var playerLives = MAX_LIVES;
 var lastLevel = 10;
 
 var playerColBuff = 0;
 
-var showFPS = false;
+var showFPS = true;
 
 var t2p      = function(t)     { return t*TILE;                     },
     p2t      = function(p)     { return Math.floor(p/TILE);         };
@@ -263,7 +263,7 @@ function killPlayer(player) {
     player.x = player.start.x;
     player.y = player.start.y;
     player.dx = player.dy = 0;
-    
+    saveGameState();
     if (playerLives <= 0) restartGame();
 }
     
@@ -278,7 +278,7 @@ function restartGame() {
     bg3Tiles  = [];
 	playerLives = MAX_LIVES;
     currentLevel = 1;
-	if (saveProg) localStorage.setItem('level',currentLevel.toString());
+    if (saveProg) saveGameState();
     startGame(); //send back to level 1
 }
 
@@ -562,11 +562,10 @@ function unfade(element) {
 }
 
 function setup(map) {
-    console.log("setting up map " + currentLevel);
+    console.log("Loading map: " + currentLevel);
     var objects, n, obj, entity;
 
     currentMap = map;
-    console.log(map.width + "    " + map.height);
     MAP.tw = map.width;
     MAP.th = map.height;
     TILE = map.tileheight;
@@ -635,7 +634,6 @@ function setupEntity(obj) {
     entity.start    = { x: obj.x, y: obj.y }
     entity.killed   = entity.collected = 0;
     entity.frame    = 0;
-    console.log("loaded entity");
     return entity;
 }
 
@@ -650,7 +648,7 @@ function nextLevel(){
     bg3Tiles  = [];
 
     currentLevel++;
-    if (saveProg) localStorage.setItem('level',currentLevel.toString());
+    if (saveProg) saveGameState();
     
     get("asset/levels/level" + currentLevel + ".json", function(req) {
         setup(JSON.parse(req.responseText));
@@ -725,6 +723,7 @@ function uiHandler(e) {
         case 'sound':
             if(type == 'touchstart') {
                 playSound = !playSound;
+                saveGameState();
                 if(!playSound) {
                     themeMusic.fadeOut(0, fadeInTime);
                     soundBtn.image.src = "asset/ui/sound_off.png";
@@ -811,7 +810,11 @@ function startGame() {
                                         }
     }    
     
+    if (saveProg) loadGameState();
+    screenState = (currentLevel == 1) ? 1 : 3;
+    
     addListeners();
+    
     if (playSound) themeMusic.fadeIn(0.1, fadeInTime);
     
     get("asset/levels/level" + currentLevel + ".json", function(req) {
@@ -827,7 +830,31 @@ function startGame() {
 //-------------------------------------------------------------------------
     
 function saveGameState() {
+    localStorage.setItem('level', currentLevel.toString());
+    localStorage.setItem('lives', playerLives.toString());
     
+    if (playSound)
+        localStorage.setItem('playSound', "true");
+    else 
+        localStorage.setItem('playSound', "false");
+    console.log("state saved");
+}
+
+function loadGameState() {
+    // ensure value exists
+    if((localStorage.getItem('level') === null) || (localStorage.getItem('level') == '11'))
+        localStorage.setItem('level', '1');
+    if(localStorage.getItem('lives') === null)
+        localStorage.setItem('lives', MAX_LIVES.toString());
+    if(localStorage.getItem('playSound') === null)
+        localStorage.setItem('playSound', "true");
+    
+    currentLevel = parseInt(localStorage.getItem('level'));
+    playerLives = parseInt(localStorage.getItem('lives'));
+    playSound = localStorage.getItem('playSound') == "true" ? true : false;
+    
+    if(!playSound) soundBtn.image.src = "asset/ui/sound_off.png";
+    console.log("state loaded");
 }
 
 function timestamp() {
