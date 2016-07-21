@@ -5,7 +5,11 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "webapp/template-blank-game-landscape-webapp/sample.zip",
       "projectGuid": "aac07676-dfdf-4689-9407-29460b222279",
+<<<<<<< HEAD
       "lastModifiedDate": 1468607256580,
+=======
+      "lastModifiedDate": 1468918250939,
+>>>>>>> origin/master
       "creationDate": 1464640277615
     },
     "sourceDirectory": "www",
@@ -227,7 +231,7 @@
           "android-installLocation": "auto",
           "Orientation": "landscape",
           "android-signed": true,
-          "Fullscreen": false
+          "Fullscreen": true
         },
         "isActive_": true,
         "appName_": "Hot Date Dash",
@@ -241,10 +245,23 @@
         },
         "icons_": [
           {
+<<<<<<< HEAD
             "relPath": "asset/icons/icon96.png",
             "density": "xhdpi",
             "height": 96,
             "width": 96
+=======
+            "relPath": "asset/icons/icon36.png",
+            "density": "ldpi",
+            "height": 36,
+            "width": 36
+          },
+          {
+            "relPath": "asset/icons/icon48.png",
+            "density": "mdpi",
+            "height": 48,
+            "width": 48
+>>>>>>> origin/master
           },
           {
             "relPath": "asset/icons/icon72.png",
@@ -253,6 +270,7 @@
             "width": 72
           },
           {
+<<<<<<< HEAD
             "relPath": "asset/icons/icon48.png",
             "density": "mdpi",
             "height": 48,
@@ -266,16 +284,40 @@
           }
         ],
         "splashes_": [],
+=======
+            "relPath": "asset/icons/icon96.png",
+            "density": "xhdpi",
+            "height": 96,
+            "width": 96
+          }
+        ],
+        "splashes_": [
+          {
+            "relPath": "asset/icons/splash.png",
+            "density": "hdpi",
+            "height": 480,
+            "width": 640,
+            "orientation": "landscape"
+          }
+        ],
+>>>>>>> origin/master
         "addlPermissions_": "",
         "excludedLibraries_": "",
-        "certificateId_": "LuVZDwiiSUSxR7piuxtwCQ2",
+        "certificateId_": "HK6AtDFo70-0msPx4zVJvA2",
         "iosProvs_": [],
         "cordovaCLIVersion_": "5.4.1",
         "crosswalkVersion_": "16",
+<<<<<<< HEAD
         "appVersion_": "0.0.1",
         "appDescription_": "Platformor",
         "appAuthor_": "Ricardo Weir, India Sohal, Bradley Rosenlof",
         "appVersionCode_": "1"
+=======
+        "appVersion_": "0.0.3",
+        "appDescription_": "Fun platformer",
+        "appAuthor_": "Ricardo Weir, India Sohal, Bradley Rosenlof ",
+        "appVersionCode_": "4"
+>>>>>>> origin/master
       }
     },
     "gameAssetDirectory": "asset",
